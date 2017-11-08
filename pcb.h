@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <time.h>
 
 /* 
 * The process identification number.
@@ -49,15 +50,19 @@ enum state_type {new, ready, running, interrupted, waiting, halted};
 typedef struct pcb { 							    
 	unsigned int pid; 							    // process identification.
 	enum state_type state; 						    // process state. 
+	unsigned int quantum;                           // the allowed time a process is allowed to run
 	unsigned int parent; 						    // parent process pid.
 	unsigned char priority; 					    // 0 is highest – 15 is lowest.
 	unsigned char * mem; 						    // start of process in memory.
 	unsigned int size; 							    // number of bytes in process.
 	unsigned char channel_no; 					    // which I/O device or service.
-	// if process is blocked, which queue it is in
 	CPU_context_p context;                          // set of cpu registers
-    
-    // other items to be added as needed. 
+	clock_t creation;								// number of ticks since the start of the program 
+	clock_t termation; 								// number of ticks when the program terminated
+	unsigned int terminate;							// 0 indicates a program can be terminated
+	unsigned int term_count;						// how many times the process has passed its max_pc value 
+	unsigned int io_1_traps[4];                	    // io device #1 traps
+    unsigned int io_2_traps[4];                     // io device #2 traps
 } PCB_s;											
 
 /* 
