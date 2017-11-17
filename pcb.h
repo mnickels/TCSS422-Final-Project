@@ -7,6 +7,8 @@
 #define NUM_CONTEXT_REGS 11							// Number of registers in the context.
 #define MAX_PCB_LEN 500								// Max length pcb representation string can be.
 #define MAX_CONTEXT_LEN 300							// Max length cpu_context representation string can be.
+#define NUM_PRIORITIES 16
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
