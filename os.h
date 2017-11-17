@@ -2,7 +2,7 @@
 #define OS_H
 
 #include "pqueue.h"
-#include "pthread.h"
+#include "ourthread.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
