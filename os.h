@@ -13,14 +13,16 @@
 #define PC_PAIR_PROCESS_LIMIT 10
 #define MRU_PROCESS_LIMIT 10
 
-typedef struct timer {
-    unsigned int counter;
-
-} timer_s;
-
 int signalTimer();
 int generatePCBs();
 void timer_pseudoISR();
 void IO_pseudoISR();
+void scheduler();
+void dispatcher();
+void pseudoIRET();
+void terminate();
+
+
+#endif
 
 
