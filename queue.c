@@ -14,14 +14,15 @@ QUEUE_p q_constructor(unsigned int quantum_size) {
 
 void q_destructor(QUEUE_p * this_ptr) {
 	while (!q_is_empty(* this_ptr)) {
-		pcb_deconstructor(&q_dequeue(* this_ptr));
+		PCB_p temp = q_dequeue(*this_ptr);
+		pcb_deconstructor(&temp);
 	}
 	free(* this_ptr);
 	* this_ptr = NULL;
 }
 
 int q_is_empty(QUEUE_p this) {
-	return length <= 0;
+	return this->length <= 0;
 }
 
 void q_enqueue(QUEUE_p this, PCB_p pcb) {

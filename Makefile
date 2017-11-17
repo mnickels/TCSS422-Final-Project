@@ -2,7 +2,7 @@
 #This make file doesn't recompile the header files if that is the only thing that changed.
 CC := gcc
 
-CFLAGS := -c -std=c99 -Wall
+CFLAGS := -c -std=c99 -Wall -pthread
 
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)

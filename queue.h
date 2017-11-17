@@ -6,7 +6,7 @@
 
 typedef struct q_node_s {
 	PCB_p pcb;
-	q_node * next;
+	struct q_node_s * next;
 } q_node;
 
 typedef struct q_s {
