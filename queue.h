@@ -4,6 +4,8 @@
 #include "pcb.h"
 #include <stdlib.h>
 
+#define MAX_Q_STRING_LEN 256
+
 typedef struct q_node_s {
 	PCB_p pcb;
 	struct q_node_s * next;
@@ -29,5 +31,7 @@ void q_enqueue(QUEUE_p, PCB_p);
 PCB_p q_dequeue(QUEUE_p);
 
 PCB_p q_peek(QUEUE_p);
+
+char * q_to_string(QUEUE_p);
 
 #endif

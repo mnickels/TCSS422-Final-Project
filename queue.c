@@ -38,6 +38,7 @@ void q_enqueue(QUEUE_p this, PCB_p pcb) {
 		this->tail->next = node;
 	}
 	this->tail = node;
+	this->length++;
 }
 
 PCB_p q_dequeue(QUEUE_p this) {
@@ -48,10 +49,35 @@ PCB_p q_dequeue(QUEUE_p this) {
 		this->head = this->head->next;
 		to_return = temp->pcb;
 		free(temp);
+		this->length--;
 	}
 	return to_return;
 }
 
 PCB_p q_peek(QUEUE_p this) {
-	return this->head;
+	return this->head->pcb;
+}
+
+char * q_to_string(QUEUE_p this) {
+	if (!this) return NULL;
+
+    char * str = (char *) calloc(MAX_Q_STRING_LEN, sizeof(char));
+    char * tracker = str;
+
+    if (this->head) {
+    	tracker += sprintf(tracker, "Q%%d(len=%d): ", this->length);
+    	q_node * temp = this->head;
+    	while (temp) {
+    		if (temp->next) {
+    			tracker += sprintf(tracker, "P%d->", temp->pcb->pid);
+    		} else {
+    			tracker += sprintf(tracker, "P%d", temp->pcb->pid);
+    		}
+    		temp = temp->next;
+    	}
+    } else {
+    	sprintf(tracker, "Q%%d(len=0): ");
+    }
+
+    return str;
 }
