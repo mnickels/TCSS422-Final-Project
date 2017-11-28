@@ -6,7 +6,6 @@ Joshua Meigs
 Yaroslav Salo
 */
 #include "pcb.h"
-#include <time.h>
 unsigned int GLOBAL_PID = 1;
 
 /************************************************************
@@ -19,7 +18,8 @@ int check_pointer(void * ptr) {
 }
 
 CPU_context_p cpu_context_constructor(void) {
-    CPU_context_p context_ptr = (CPU_context_p) malloc(sizeof(CPU_context_s));;
+    CPU_context_p context_ptr = (CPU_context_p) malloc(sizeof(CPU_context_s));
+    cpu_context_init(context_ptr);
     return context_ptr;
 }
 
@@ -81,10 +81,29 @@ char * cpu_context_to_string(CPU_context_p context_ptr) {
 
 PCB_p pcb_constructor(void) {
     PCB_p pcb_ptr = (PCB_p) malloc(sizeof(PCB_s));
-    CPU_context_p context_ptr = cpu_context_constructor();      // allocate memory for the context.
-    pcb_ptr->context = context_ptr;                             // assign the pcb_context pointer.
-    pcb_set_pid(pcb_ptr);
+    pcb_init(pcb_ptr);
     return pcb_ptr;
+}
+
+int pcb_init(PCB_p pcb_ptr) {
+    if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR; 
+    pcb_ptr->parent = GLOBAL_PID;                   // the parent is the process that came before
+    pcb_set_pid(pcb_ptr);
+    pcb_ptr->state = new;
+    pcb_ptr->priority = 0;                          // all new process get priority 0 
+    pcb_ptr->mem = (unsigned char *) pcb_ptr;       // ?????????
+    pcb_ptr->size = 0;                              // ????????? 
+    pcb_ptr->channel_no = 0;                        // ?????????
+    pcb_ptr->context = cpu_context_constructor();   // possibility that malloc returns NULL
+    pcb_ptr->creation = clock();
+    pcb_ptr->termination = 0;
+                                                    // space for termination and term count 
+    
+    init_io_1(pcb_ptr);
+    init_io_2(pcb_ptr);
+
+
+    return NO_ERR;
 }
 
 int pcb_deconstructor(PCB_p *pcb_ptr) {
@@ -97,22 +116,6 @@ int pcb_deconstructor(PCB_p *pcb_ptr) {
 int pcb_set_pid(PCB_p pcb_ptr){
     if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_ptr->pid = GLOBAL_PID++;
-    return NO_ERR;
-}
-
-int pcb_init(PCB_p pcb_ptr) {
-    if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR;
-    int r = rand() % 16;                        // generate a random number 0-15
-
-    pcb_set_pid(pcb_ptr);
-    pcb_ptr->state = new;
-    pcb_ptr->parent = 0;                        // ?????????
-    pcb_ptr->priority = r;                      // set the priority randomly
-                                                // TODO change this at somepoint
-    pcb_ptr->mem = (unsigned char *) pcb_ptr;   // ?????????
-    pcb_ptr->size = 0;                          // ?????????
-    pcb_ptr->channel_no = 0;                    // ?????????
-    cpu_context_init(pcb_ptr->context);
     return NO_ERR;
 }
 
@@ -140,4 +143,19 @@ char * pcb_to_string(PCB_p pcb_ptr) {
     //free the memory of the temporary context string.
     free(temp);
     return str;
+}  
+
+void init_io_1(PCB_p my_pcb) {
+    for(int i = 0; i < 4; i++) {
+        my_pcb->io_1_traps[i] = rand() % 400 + (i * (rand() % 100 + 300));
+        printf("num: %u\n",  my_pcb->io_1_traps[i]);
+    }
+    printf("\n");
+}
+
+void init_io_2(PCB_p my_pcb) {
+    for(int i = 0; i < 4; i++) {
+        my_pcb->io_2_traps[i] = rand() % 250 + (i * (rand() % 100 + 250));
+        printf("num: %u\n", my_pcb->io_2_traps[i]);
+    }
 }

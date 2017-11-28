@@ -61,7 +61,7 @@ typedef struct pcb {
 	unsigned char channel_no; 					    // which I/O device or service.
 	CPU_context_p context;                          // set of cpu registers
 	clock_t creation;								// number of ticks since the start of the program
-	clock_t termation; 								// number of ticks when the program terminated
+	clock_t termination; 							// number of ticks when the program terminated
 	unsigned int terminate;							// 0 indicates a program can be terminated
 	unsigned int term_count;						// how many times the process has passed its max_pc value
 	unsigned int io_1_traps[4];                	    // io device #1 traps
@@ -158,5 +158,16 @@ int pcb_init(PCB_p pcb_ptr);
 * Returs -1 if either of the pointers were invalid otherwise returns 0.
 */
 char * pcb_to_string(PCB_p pcb_ptr);
+
+/**
+* Initialize the trap numbers for io_1.
+*/
+void init_io_1(PCB_p);
+
+/**
+* Initialize the trap numbers for io_2.
+*/
+
+void init_io_2(PCB_p);
 
 #endif
