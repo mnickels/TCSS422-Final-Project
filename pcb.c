@@ -97,7 +97,7 @@ int pcb_init(PCB_p pcb_ptr) {
     pcb_ptr->context = cpu_context_constructor();   // possibility that malloc returns NULL
     pcb_ptr->creation = clock();
     pcb_ptr->termination = 0;
-                                                    // space for termination and term count 
+    pcb_ptr->terminate = 0;                                 // space for termination and term count
     
     init_io_1(pcb_ptr);
     init_io_2(pcb_ptr);
@@ -148,14 +148,14 @@ char * pcb_to_string(PCB_p pcb_ptr) {
 void init_io_1(PCB_p my_pcb) {
     for(int i = 0; i < 4; i++) {
         my_pcb->io_1_traps[i] = rand() % 400 + (i * (rand() % 100 + 300));
-        printf("num: %u\n",  my_pcb->io_1_traps[i]);
+        //printf("num: %u\n",  my_pcb->io_1_traps[i]);
     }
-    printf("\n");
+    //printf("\n");
 }
 
 void init_io_2(PCB_p my_pcb) {
     for(int i = 0; i < 4; i++) {
         my_pcb->io_2_traps[i] = rand() % 250 + (i * (rand() % 100 + 250));
-        printf("num: %u\n", my_pcb->io_2_traps[i]);
+        //printf("num: %u\n", my_pcb->io_2_traps[i]);
     }
 }

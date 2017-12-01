@@ -1,14 +1,14 @@
-#include "queue.h"
+#include "p_queue.h"
 #include <pthread.h>
 
-typedef struct mutex {
-    PCB* process;
-    q_s waitq;
-}
+// typedef struct mutex {
+//     PCB_p process;
+//     QUEUE_p waitq;
+//};
 int pthread_mutex_lock(pthread_mutex_t* mutex);
 int pthread_mutex_unlock(pthread_mutex_t* mutex);
 int pthread_mutex_trylock(pthread_mutex_t* mutex);
-int pthread_mutex_timedlock(pthread_mutex_t* mutex, struct timespec* abs_timeout);
+//int pthread_mutex_timedlock(pthread_mutex_t* mutex, struct timespec* abs_timeout);
 
 
 int pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_routine) (void*), void* arg);

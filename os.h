@@ -1,8 +1,10 @@
 #ifndef OS_H
 #define OS_H
 
-#include "pqueue.h"
+#include "p_queue.h"
 #include "ourthread.h"
+#include "timer.h"
+#include "iodevice.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,15 +14,26 @@
 #define CI_PROCESS_LIMIT 25
 #define PC_PAIR_PROCESS_LIMIT 10
 #define MRU_PROCESS_LIMIT 10
+#define MAX_PCB 10
+#define S 50000
 
-int signalTimer();
-int generatePCBs();
-void timer_pseudoISR();
-void IO_pseudoISR();
 void scheduler();
 void dispatcher();
-void pseudoIRET();
-void terminate();
+void generateInitialPCBs();
+void runProcess();
+int checkIOInterrupt();
+int checkTermination();
+void generatePCBs();
+void resetQueue();
+
+// int signalTimer();
+// int generatePCBs();
+// void timer_pseudoISR();
+// void IO_pseudoISR();
+// void scheduler();
+// void dispatcher();
+// void pseudoIRET();
+// void terminate();
 
 
 #endif
