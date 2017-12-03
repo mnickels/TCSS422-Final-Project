@@ -46,6 +46,8 @@ typedef CPU_context_s * CPU_context_p;
 * Possible states of the pcb.
 */
 enum state_type {new, ready, running, interrupted, waiting, halted};
+enum process_type {IO, CI, PrCo, MR};
+enum pc_pair_type {producer, consumer};
 
 /*
 * Process control block struct.
@@ -66,6 +68,11 @@ typedef struct pcb {
 	unsigned int term_count;						// how many times the process has passed its max_pc value
 	unsigned int io_1_traps[4];                	    // io device #1 traps
     unsigned int io_2_traps[4];                     // io device #2 traps
+	enum process_type p_type;
+	enum pc_pair_type pair_type;
+	unsigned int * shared_resource;
+	pthread_mutex_t * mutex;
+	unsigned int pair_id;
 } PCB_s;
 
 /*
@@ -131,7 +138,7 @@ char * cpu_context_to_string(CPU_context_p context_ptr);
 /*
 * Assigns a PID to the process and increments the global variable by 1.
 */
-PCB_p pcb_constructor(void);
+PCB_p pcb_constructor(enum process_type ptype);
 
 /*
 * Free the memory pointed to by the *pcb_ptr and set that
