@@ -13,7 +13,7 @@ for(;;)
 
 scheduler()
 dispatcher() starts timer
-timer()        
+timer()
 
 */
 #include "os.h"
@@ -32,6 +32,8 @@ PCB_p currentprocess;
 unsigned int PC;
 int PCB_COUNT = 0;
 
+unsigned int timer_interrupt_flag = 0;
+
 int main() {
     srand(0);
     readyqueue = p_q_constructor();
@@ -40,7 +42,7 @@ int main() {
     //initialize timer
     PC = 0;
     generateInitialPCBs();
-    
+
     for(;;) {
         if((PC % 50) == 0){
             printf("PC = %d\n", PC);
@@ -57,6 +59,14 @@ int main() {
             resetQueue();
         }
         if (PC == 1000) break;
+    }
+}
+
+void pseudo_ISR(interrupt_t type) {
+    if (type == TIMER_INTERRUPT) {
+
+    } else if (type == IO_INTERRUPT) {
+
     }
 }
 
