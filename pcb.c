@@ -97,7 +97,7 @@ int pcb_init(PCB_p pcb_ptr) {
     pcb_ptr->context = cpu_context_constructor();   // possibility that malloc returns NULL
     pcb_ptr->creation = clock();
     pcb_ptr->termination = 0;
-    pcb_ptr->terminate = 0;                                 // space for termination and term count
+    pcb_ptr->terminate = 0;                         // space for termination and term count
     
     init_io_1(pcb_ptr);
     init_io_2(pcb_ptr);

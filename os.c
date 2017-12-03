@@ -32,33 +32,33 @@ PCB_p currentprocess;
 unsigned int PC;
 int PCB_COUNT = 0;
 
-int main() {
-    srand(0);
-    readyqueue = p_q_constructor();
-    IOdevice1 = device_constructor(DEVICE_1);
-    IOdevice2 = device_constructor(DEVICE_2);
-    //initialize timer
-    PC = 0;
-    generateInitialPCBs();
+// int main() {
+//     srand(0);
+//     readyqueue = p_q_constructor();
+//     IOdevice1 = device_constructor(DEVICE_1);
+//     IOdevice2 = device_constructor(DEVICE_2);
+//     //initialize timer
+//     PC = 0;
+//     generateInitialPCBs();
     
-    for(;;) {
-        if((PC % 50) == 0){
-            printf("PC = %d\n", PC);
-            char* pcbs = pcb_to_string(currentprocess);
-            printf("Current process:\n%s\n", pcbs);
-            char* pqs = p_q_to_string(readyqueue);
-            printf("%s\n...\n\n", pqs);
-        }
-        runProcess();
-        checkIOInterrupt();
-        checkTermination();
-        generatePCBs();
-        if(PC == S){
-            resetQueue();
-        }
-        if (PC == 1000) break;
-    }
-}
+//     for(;;) {
+//         if((PC % 50) == 0){
+//             printf("PC = %d\n", PC);
+//             char* pcbs = pcb_to_string(currentprocess);
+//             printf("Current process:\n%s\n", pcbs);
+//             char* pqs = p_q_to_string(readyqueue);
+//             printf("%s\n...\n\n", pqs);
+//         }
+//         runProcess();
+//         checkIOInterrupt();
+//         checkTermination();
+//         generatePCBs();
+//         if(PC == S){
+//             resetQueue();
+//         }
+//         if (PC == 1000) break;
+//     }
+// }
 
 void scheduler() {
 

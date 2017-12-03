@@ -11,6 +11,9 @@ DEVICE_p device_constructor(device_number_t io_id) {
 		device->io_id = io_id;
 		device->timer = 0;
 		device->wait_queue = wait_queue;
+		int rc = pthread_mutex_init(&(device->mutex), NULL);
+		assert(rc == 0);
+		printf("RC VALUE: %d\n", rc);
 	}
 	return device;
 }

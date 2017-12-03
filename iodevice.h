@@ -5,6 +5,8 @@
 #define PTR_ERR -7
 
 #include "queue.h"
+#include <pthread.h>
+#include <assert.h>
 
 /**
 * IO Device
@@ -19,6 +21,7 @@ typedef struct io_device {
 	device_number_t io_id;
 	unsigned int timer;
 	QUEUE_p wait_queue;
+	pthread_mutex_t mutex;
 } DEVICE_s ;
 typedef DEVICE_s * DEVICE_p;
 
