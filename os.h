@@ -17,6 +17,8 @@
 #define MAX_PCB 10
 #define S 50000
 
+typedef enum {TIMER_INTERRUPT = 0, IO_INTERRUPT = 1} interrupt_t;
+
 void scheduler();
 void dispatcher();
 void generateInitialPCBs();
@@ -28,10 +30,9 @@ void resetQueue();
 
 // int signalTimer();
 // int generatePCBs();
-// void timer_pseudoISR();
-// void IO_pseudoISR();
-// void scheduler();
-// void dispatcher();
+void pseudo_ISR();
+void scheduler();
+void dispatcher();
 // void pseudoIRET();
 // void terminate();
 

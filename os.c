@@ -13,7 +13,7 @@ for(;;)
 
 scheduler()
 dispatcher() starts timer
-timer()        
+timer()
 
 */
 #include "os.h"
@@ -59,6 +59,15 @@ int PCB_COUNT = 0;
 //         if (PC == 1000) break;
 //     }
 // }
+
+
+void pseudo_ISR(interrupt_t type) {
+    if (type == TIMER_INTERRUPT) {
+
+    } else if (type == IO_INTERRUPT) {
+
+    }
+}
 
 void scheduler() {
 
