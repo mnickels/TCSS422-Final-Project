@@ -8,6 +8,8 @@ DEVICE_p IOdevice2;
 PCB_p currentprocess;
 unsigned int PC;
 int PCB_COUNT;
+int interrupt_flag;
+int trap_flag;
 
 int main() {
     srand(0);
@@ -18,8 +20,10 @@ int main() {
     //initialize timer
     PC = 0;
     PCB_COUNT = 0;
+    interrupt_flag = -1;
+    trap_flag = -1;
     generateInitialPCBs();
-    
+
     for(;;) {
         if((PC % 50) == 0){
             printf("PC = %d\n", PC);
@@ -28,25 +32,63 @@ int main() {
             char* pqs = p_q_to_string(readyqueue);
             printf("%s\n...\n\n", pqs);
         }
+        
+        if (interrupt_flag != -1) scheduler();
+
         runProcess();
-        checkIOInterrupt();
+        if (trap_flag != -1) scheduler();
+
         checkTermination();
+        
         if(PC == S){
             resetQueue();
         }
+
         if (PC == 1000) break;
-        //if(timer_flag){
-            //context switch
-        //}
     }
 }
 
-void scheduler() {
+void psuedoISR(interrupt_t interrupt) {
+    interrupt_flag = interrupt;
+}
 
+void scheduler() {
+    switch(interrupt_flag){
+        case(-1):
+            switch(trap_flag){
+                case(-1):
+                    //check created queue and add them to readyqueue
+                    dispatcher();
+                    break;
+                case(1):
+                    //enqueue process to device 1
+                    //dispatcher()
+                    break;
+                case(2):
+                    //enqueue process to io device 2
+                    //dispatcher()
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case(TIMER_INTERRUPT):
+            dispatcher();
+            break;
+        case(IO1_INTERRUPT):
+            p_q_enqueue(readyqueue, device_dequeue(IOdevice1));
+            break;
+        case(IO2_INTERRUPT):
+            p_q_enqueue(readyqueue, device_dequeue(IOdevice2));
+            break;
+        default:
+            break;
+    }
+    interrupt_flag = -1;
 }
 
 void dispatcher() {
-
+    
 }
 
 void generateInitialPCBs() {
@@ -70,8 +112,7 @@ void generateInitialPCBs() {
                 break;
         }
     }
-    currentprocess = p_q_dequeue(readyqueue);
-    currentprocess->state = ready;
+    scheduler();
 }
 
 void runProcess() {
@@ -79,7 +120,7 @@ void runProcess() {
     //check process type and take appropriate action
     switch (currentprocess->p_type) {
         case(IO):
-            //check for interrupt?
+            trap_flag = checkIOTrap();
             break;
         case(CI):
             break;
@@ -102,7 +143,7 @@ void runProcess() {
     }
 }
 
-int checkIOInterrupt() {
+int checkIOTrap() {
     for(int i = 0; i < 4; i++){
         if(PC == currentprocess->io_1_traps[i]){
             printf("IOInterrupt request for device 1 at PC = %d.\n\n", PC);
@@ -176,6 +217,7 @@ void createPCB(enum process_type ptype) {
         default:
             break;
     }
+    scheduler();
 }
 
 void resetQueue() {

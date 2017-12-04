@@ -17,7 +17,7 @@
 #define MAX_PCB 115
 #define S 50000
 
-typedef enum {TIMER_INTERRUPT = 0, IO_INTERRUPT = 1} interrupt_t;
+typedef enum {TIMER_INTERRUPT = 0, IO1_INTERRUPT = 1, IO2_INTERRUPT} interrupt_t;
 
 void scheduler();
 void dispatcher();
