@@ -64,6 +64,7 @@ typedef struct pcb {
 	CPU_context_p context;                          // set of cpu registers
 	clock_t creation;								// number of ticks since the start of the program
 	clock_t termination; 							// number of ticks when the program terminated
+	unsigned int max_pc;
 	unsigned int terminate;							// 0 indicates a program can be terminated
 	unsigned int term_count;						// how many times the process has passed its max_pc value
 	unsigned int io_1_traps[4];                	    // io device #1 traps

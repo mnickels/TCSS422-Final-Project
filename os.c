@@ -42,11 +42,17 @@ int main() {
 
         runProcess();
         if (trap_flag != -1) scheduler();
-
-        checkTermination();
         
         if(!(CPU_PC % S)) {
             resetQueue();
+        }
+
+        if (CPU_PC >= currentprocess->max_pc) {
+            currentprocess->term_count++;
+            checkTermination();
+            CPU_PC = 0;
+        } else {
+            CPU_PC++;
         }
 
         if (CPU_PC == 1000) break;
@@ -164,7 +170,6 @@ void runProcess() {
         default:
             break;
     }
-    CPU_PC++;
 }
 
 int checkIOTrap() {
@@ -180,14 +185,19 @@ int checkIOTrap() {
     return -1;
 }
 
-int checkTermination() {
-    if (currentprocess->terminate == 0){
+void checkTermination() {
+    // check if the current process can be terminated, and its term_count == 0
+    if (currentprocess->terminate && currentprocess->term_count >= currentprocess->terminate) {
         q_enqueue(terminatedqueue, currentprocess);
         currentprocess = NULL;
         scheduler();
     }
-    //check terminate queue size and empty if it reaches a certain size ?5?
-    return 0;
+    // check terminate queue size and empty if it reaches a certain size
+    if (terminatedqueue->length >= 5) {
+        for (int i = 0; i < terminatedqueue->length; i++) {
+            pcb_deconstructor(q_dequeue(terminatedqueue));
+        }
+    }
 }
 
 void addPCB() {
