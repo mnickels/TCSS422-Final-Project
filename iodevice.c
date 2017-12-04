@@ -9,6 +9,7 @@ DEVICE_p device_constructor(device_number_t io_id) {
 	
 	if(device && wait_queue) {
 		device->io_id = io_id;
+		device->ready = 1;
 		device->wait_queue = wait_queue;
 		int rc = pthread_mutex_init(&(device->mutex), NULL);
 		assert(rc == 0);
@@ -39,7 +40,7 @@ int device_enqueue(DEVICE_p device_ptr, PCB_p pcb_ptr) {
 	return SUCCESS;
 }
 
-int device_dequeue(DEVICE_p device_ptr) {
+PCB_p device_dequeue(DEVICE_p device_ptr) {
 	if(!device_ptr) return PTR_ERR;
 	pthread_mutex_lock(&(device_ptr->mutex));
 	printf("Device num: %d DEQ LOCKED\n", device_ptr->io_id);
@@ -47,17 +48,24 @@ int device_dequeue(DEVICE_p device_ptr) {
 	//printf("In deque pcb_pid: %d\n ", temp->pid);
 	pthread_mutex_unlock(&(device_ptr->mutex));
 	printf("Device num: %d DEQ UNLOCKED\n", device_ptr->io_id);
-	if(temp) return temp->pid;
-	return -1;
-	//return device_ptr->io_id;
+	return temp;
 }
 
 void *device_run(void * device_ptr) {
+	DEVICE_p d = (DEVICE_p) device_ptr;
 	for(;;) {
-		DEVICE_p d = (DEVICE_p) device_ptr;
-		printf("Device num: %d in the runner\n", d->io_id);
-		sleep(1);
-		int temp = device_dequeue(d);
-		printf("After waking up the pid of dequed process is: *%d*\n", temp);
+
+		if (d->ready && device->wait_queue->length) {
+			sleep(QUANTUM_SCALAR * 1500);
+			d->ready = 0; 
+			pseudo_ISR(d->io_id);
+		}
+
+		
+		// printf("Device num: %d in the runner\n", d->io_id);
+		// sleep(1);
+		// int temp = device_dequeue(d);
+		// pseudo_ISR(IO_INTERRUPT);
+		// printf("After waking up the pid of dequed process is: *%d*\n", temp);
 	}
 }
