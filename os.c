@@ -6,7 +6,8 @@ QUEUE_p createdqueue;
 DEVICE_p IOdevice1;
 DEVICE_p IOdevice2;
 PCB_p currentprocess;
-unsigned int PC;
+unsigned int CPU_PC;
+unsigned int SYS_STACK;
 int PCB_COUNT;
 int interrupt_flag;
 int trap_flag;
@@ -18,15 +19,15 @@ int main() {
     IOdevice1 = device_constructor(DEVICE_1);
     IOdevice2 = device_constructor(DEVICE_2);
     //initialize timer
-    PC = 0;
+    CPU_PC = 0;
     PCB_COUNT = 0;
     interrupt_flag = -1;
     trap_flag = -1;
     generateInitialPCBs();
 
     for(;;) {
-        if((PC % 50) == 0){
-            printf("PC = %d\n", PC);
+        if((CPU_PC % 50) == 0){
+            printf("PC = %d\n", CPU_PC);
             char* pcbs = pcb_to_string(currentprocess);
             printf("Current process:\n%s\n", pcbs);
             char* pqs = p_q_to_string(readyqueue);
@@ -40,45 +41,50 @@ int main() {
 
         checkTermination();
         
-        if(PC == S){
+        if(CPU_PC == S){
             resetQueue();
         }
 
-        if (PC == 1000) break;
+        if (CPU_PC == 1000) break;
     }
 }
 
+// gets called by the timer and IO devices
 void psuedoISR(interrupt_t interrupt) {
     interrupt_flag = interrupt;
 }
 
 void scheduler() {
     switch(interrupt_flag){
-        case(-1):
+        case -1:
             switch(trap_flag){
-                case(-1):
+                case -1:
                     //check created queue and add them to readyqueue
-                    dispatcher();
+                    for (int i = 0; i < createdqueue->length; i++) {
+                        p_q_enqueue(readyqueue, q_dequeue(createdqueue));
+                    }
+
+                    dispatcher(0);
                     break;
-                case(1):
+                case 1:
                     //enqueue process to device 1
-                    //dispatcher()
+                    dispatcher(1);
                     break;
-                case(2):
+                case 2:
                     //enqueue process to io device 2
-                    //dispatcher()
+                    dispatcher(2);
                     break;
                 default:
                     break;
             }
             break;
-        case(TIMER_INTERRUPT):
-            dispatcher();
+        case TIMER_INTERRUPT:
+            dispatcher(0);
             break;
-        case(IO1_INTERRUPT):
+        case IO1_INTERRUPT:
             p_q_enqueue(readyqueue, device_dequeue(IOdevice1));
             break;
-        case(IO2_INTERRUPT):
+        case IO2_INTERRUPT:
             p_q_enqueue(readyqueue, device_dequeue(IOdevice2));
             break;
         default:
@@ -87,8 +93,19 @@ void scheduler() {
     interrupt_flag = -1;
 }
 
-void dispatcher() {
-    
+void dispatcher(unsigned int trap_f) {
+    if (currentprocess) {
+        currentprocess->pc = SYS_STACK;
+        if (trap_f == 1) {
+            device_enqueue(IOdevice1, currentprocess);
+        } else if (trap_f == 2) {
+            device_enqueue(IOdevice2, currentprocess);
+        } else {
+            p_q_enqueue(readyqueue, currentprocess);
+        }
+    }
+    currentprocess = p_q_dequeue(readyqueue);
+    SYS_STACK = currentprocess->pc;
 }
 
 void generateInitialPCBs() {
