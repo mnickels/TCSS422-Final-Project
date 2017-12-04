@@ -7,16 +7,17 @@ DEVICE_p IOdevice1;
 DEVICE_p IOdevice2;
 PCB_p currentprocess;
 unsigned int PC;
-int PCB_COUNT = 0;
+int PCB_COUNT;
 
 int main() {
     srand(0);
     readyqueue = p_q_constructor();
-    createdqueue = q_constructor();
+    createdqueue = q_constructor(0);
     IOdevice1 = device_constructor(DEVICE_1);
     IOdevice2 = device_constructor(DEVICE_2);
     //initialize timer
     PC = 0;
+    PCB_COUNT = 0;
     generateInitialPCBs();
     
     for(;;) {
@@ -77,6 +78,29 @@ void generateInitialPCBs() {
 void runProcess() {
     PC++;
     //check process type and take appropriate action
+    switch (currentprocess->p_type) {
+        case(IO):
+            //check for interrupt?
+            break;
+        case(CI):
+            break;
+        case(PrCo):
+            if(currentprocess->pair_type == producer) {
+                pthread_mutex_lock(currentprocess->mutex);
+                currentprocess->shared_resource++;
+                pthread_mutex_unlock(currentprocess->mutex);
+            } else {
+                pthread_mutex_lock(currentprocess->mutex);
+                printf("Consumer Process Pair ID %d: val = %d", currentprocess->pair_id, currentprocess->shared_resource);
+                pthread_mutex_unlock(currentprocess->mutex);
+            }
+            break;
+        case(MR):
+            //do mutual resource stuff
+            break;
+        default:
+            break;
+    }
 }
 
 int checkIOInterrupt() {
@@ -100,14 +124,23 @@ int checkTermination() {
     return 0;
 }
 
-void generatePCBs() {
-    int toAdd = rand() % 5;
-    for(int i = 0; i < toAdd; i++){
-        if(PCB_COUNT < MAX_PCB){
-            PCB_p pcb = pcb_constructor();
-            p_q_enqueue(readyqueue, pcb);
-            PCB_COUNT++;
-        }
+void addPCB() {
+    int ptype = rand() % 4;
+    switch (ptype) {
+        case(0):
+            createPCB(IO);
+            break;
+        case(1):
+            createPCB(CI);
+            break;
+        case(2):
+            createPCB(PrCo);
+            break;
+        case(3):
+            createPCB(MR);
+            break;
+        default:
+            break;
     }
 }
 
@@ -118,10 +151,12 @@ void createPCB(enum process_type ptype) {
         case(IO):
             pcb = pcb_constructor(IO);
             q_enqueue(createdqueue, pcb);
+            PCB_COUNT++;
             break;
         case(CI):
             pcb = pcb_constructor(CI);
             q_enqueue(createdqueue, pcb);
+            PCB_COUNT++;
             break;
         case(PrCo):
             pcb = pcb_constructor(PrCo);
@@ -129,6 +164,7 @@ void createPCB(enum process_type ptype) {
             assignPair(pcb, pcb2);
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
+            PCB_COUNT += 2;
             break;
         case(MR):
             pcb = pcb_constructor(MR);
@@ -136,6 +172,7 @@ void createPCB(enum process_type ptype) {
             assignPair(pcb, pcb2);
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
+            PCB_COUNT += 2;
             break;
         default:
             break;
