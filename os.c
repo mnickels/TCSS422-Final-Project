@@ -31,7 +31,6 @@ int main() {
         runProcess();
         checkIOInterrupt();
         checkTermination();
-        generatePCBs();
         if(PC == S){
             resetQueue();
         }
