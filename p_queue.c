@@ -56,6 +56,10 @@ PCB_p p_q_peek(P_QUEUE_p this) {
 	return NULL;
 }
 
+unsigned int get_priority_level_quantum_size(P_QUEUE_p this, unsigned int priority) {
+	return get_quantum_size(this->queues[i]);
+}
+
 char * p_q_to_string(P_QUEUE_p this) {
 	if (!this) return NULL;
 

@@ -3,8 +3,10 @@
 
 P_QUEUE_p readyqueue;
 QUEUE_p createdqueue;
+QUEUE_p terminatedqueue;
 DEVICE_p IOdevice1;
 DEVICE_p IOdevice2;
+TIMER_p timer;
 PCB_p currentprocess;
 unsigned int CPU_PC;
 unsigned int SYS_STACK;
@@ -16,8 +18,10 @@ int main() {
     srand(0);
     readyqueue = p_q_constructor();
     createdqueue = q_constructor(0);
+    terminatedqueue = q_constructor(0);
     IOdevice1 = device_constructor(DEVICE_1);
     IOdevice2 = device_constructor(DEVICE_2);
+    timer = timer_constructor();
     //initialize timer
     CPU_PC = 0;
     PCB_COUNT = 0;
@@ -41,7 +45,7 @@ int main() {
 
         checkTermination();
         
-        if(CPU_PC == S){
+        if(!(CPU_PC % S)) {
             resetQueue();
         }
 
@@ -93,6 +97,7 @@ void scheduler() {
     }
     trap_flag = -1;
     interrupt_flag = -1;
+    set_timer(get_priority_level_quantum_size(readyqueue, currentprocess));
 }
 
 void dispatcher(unsigned int trap_f) {
@@ -135,7 +140,6 @@ void generateInitialPCBs() {
 }
 
 void runProcess() {
-    CPU_PC++;
     //check process type and take appropriate action
     switch (currentprocess->p_type) {
         case(IO):
@@ -160,6 +164,7 @@ void runProcess() {
         default:
             break;
     }
+    CPU_PC++;
 }
 
 int checkIOTrap() {
@@ -177,7 +182,9 @@ int checkIOTrap() {
 
 int checkTermination() {
     if (currentprocess->terminate == 0){
-        //do the random thing and add to terminate queue if it triggers
+        q_enqueue(terminatedqueue, currentprocess);
+        currentprocess = NULL;
+        scheduler();
     }
     //check terminate queue size and empty if it reaches a certain size ?5?
     return 0;

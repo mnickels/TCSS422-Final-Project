@@ -24,6 +24,8 @@ PCB_p p_q_dequeue(P_QUEUE_p);
 
 PCB_p p_q_peek(P_QUEUE_p);
 
+unsigned int get_priority_level_quantum_size(P_QUEUE_p, unsigned int);
+
 char * p_q_to_string(P_QUEUE_p);
 
 #endif

@@ -32,6 +32,8 @@ PCB_p q_dequeue(QUEUE_p);
 
 PCB_p q_peek(QUEUE_p);
 
+unsigned int get_quantum_size(QUEUE_p);
+
 char * q_to_string(QUEUE_p);
 
 #endif

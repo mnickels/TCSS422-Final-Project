@@ -58,6 +58,10 @@ PCB_p q_peek(QUEUE_p this) {
 	return this->head->pcb;
 }
 
+unsigned int get_quantum_size(QUEUE_p this) {
+	return this->quantum_size;
+}
+
 char * q_to_string(QUEUE_p this) {
 	if (!this) return NULL;
 
