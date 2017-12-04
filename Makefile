@@ -14,7 +14,7 @@ OBJS := $(SRCS:.c=.o)
 default: output
 
 output: $(OBJS)
-	$(CC) $(LFLAGS)  $(OBJS) -o $@ 
+	$(CC) $(LFLAGS) -pthread $(OBJS) -o $@ 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@ -I.

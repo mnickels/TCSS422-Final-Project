@@ -7,6 +7,7 @@ Yaroslav Salo
 */
 #include "pcb.h"
 unsigned int GLOBAL_PID = 1;
+unsigned int PAIR_ID = 1;
 
 /************************************************************
 *              CPU_context_s FUNCTION DEFINITIONS           *
@@ -79,13 +80,13 @@ char * cpu_context_to_string(CPU_context_p context_ptr) {
 *                PCB_s FUNCTION DEFINITIONS                *
 *************************************************************/
 
-PCB_p pcb_constructor(void) {
+PCB_p pcb_constructor(enum process_type ptype) {
     PCB_p pcb_ptr = (PCB_p) malloc(sizeof(PCB_s));
-    pcb_init(pcb_ptr);
+    pcb_init(pcb_ptr, ptype);
     return pcb_ptr;
 }
 
-int pcb_init(PCB_p pcb_ptr) {
+int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
     if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR; 
     pcb_ptr->parent = GLOBAL_PID;                   // the parent is the process that came before
     pcb_set_pid(pcb_ptr);
@@ -98,7 +99,8 @@ int pcb_init(PCB_p pcb_ptr) {
     pcb_ptr->creation = clock();
     pcb_ptr->termination = 0;
     pcb_ptr->terminate = 0;                         // space for termination and term count
-    
+    pcb_ptr->p_type = ptype;
+
     init_io_1(pcb_ptr);
     init_io_2(pcb_ptr);
 
@@ -116,6 +118,21 @@ int pcb_deconstructor(PCB_p *pcb_ptr) {
 int pcb_set_pid(PCB_p pcb_ptr){
     if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_ptr->pid = GLOBAL_PID++;
+    return NO_ERR;
+}
+
+int assignPair(PCB_p pcb_p, PCB_p pcb_c) {
+    if (check_pointer(pcb_p) == NO_OBJ_ERR || check_pointer(pcb_c) == NO_OBJ_ERR) return NO_OBJ_ERR;
+    pcb_p->pair_type = producer;
+    pcb_c->pair_type = consumer;
+    pcb_p->pair_id = PAIR_ID;
+    pcb_c->pair_id = PAIR_ID++;
+    unsigned int * shared_resource = calloc(1, sizeof(int));
+    pthread_mutex_t * mutex = calloc(1, sizeof(pthread_mutex_t));
+    pcb_c->shared_resource = shared_resource;
+    pcb_p->shared_resource = shared_resource;
+    pcb_p->mutex = mutex;
+    pcb_c->mutex = mutex;
     return NO_ERR;
 }
 
@@ -150,12 +167,11 @@ void init_io_1(PCB_p my_pcb) {
         my_pcb->io_1_traps[i] = rand() % 400 + (i * (rand() % 100 + 300));
         //printf("num: %u\n",  my_pcb->io_1_traps[i]);
     }
-    //printf("\n");
 }
 
 void init_io_2(PCB_p my_pcb) {
     for(int i = 0; i < 4; i++) {
         my_pcb->io_2_traps[i] = rand() % 250 + (i * (rand() % 100 + 250));
-        //printf("num: %u\n", my_pcb->io_2_traps[i]);
+        //printf("num: %u\n",  my_pcb->io_2_traps[i]);
     }
 }
