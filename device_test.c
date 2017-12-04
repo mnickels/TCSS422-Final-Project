@@ -3,24 +3,27 @@
 
 int main() {
 	DEVICE_p device1 = device_constructor(1);
-	printf("AFTER CONSTRUCTION\nID: %u\n", device1->io_id);
-	printf("TIMER: %u\n", device1->timer);
 	//space for testing the queue
 
 	PCB_p p1 = pcb_constructor();
-	
-	device_set_timer(device1, 100);
-	printf("AFTER SET\nTIMER: %u\n", device1->timer);
+	PCB_p p2 = pcb_constructor();
+	PCB_p p3 = pcb_constructor();
+
+	PCB_p p4 = pcb_constructor();
+	PCB_p p5 = pcb_constructor();
+	PCB_p p6 = pcb_constructor();
 
 	DEVICE_p device2 = device_constructor(2);
-	printf("AFTER CONSTRUCTION\nID: %u\n", device2->io_id);
-	printf("TIMER: %u\n", device2->timer);
 
-	//space for testing the queue
+	device_enqueue(device1, p1);
+	device_enqueue(device1, p2);
+	device_enqueue(device1, p3);
 
-	device_set_timer(device2, 200);
-	printf("AFTER SET\nTIMER: %u\n", device2->timer);
+	device_enqueue(device2, p4);
+	device_enqueue(device2, p5);
+	device_enqueue(device2, p6);
 
+	sleep(5);
 	device_deconstructor(&device1);
 	device_deconstructor(&device2);
 

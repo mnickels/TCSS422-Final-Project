@@ -7,6 +7,7 @@
 #include "queue.h"
 #include <pthread.h>
 #include <assert.h>
+#include <unistd.h>
 
 /**
 * IO Device
@@ -18,8 +19,8 @@
 
 typedef enum {DEVICE_1 = 1, DEVICE_2 = 2} device_number_t;
 typedef struct io_device {
+	pthread_t device_thread;
 	device_number_t io_id;
-	unsigned int timer;
 	QUEUE_p wait_queue;
 	pthread_mutex_t mutex;
 } DEVICE_s ;
@@ -27,5 +28,7 @@ typedef DEVICE_s * DEVICE_p;
 
 DEVICE_p device_constructor(device_number_t);
 int device_deconstructor(DEVICE_p*);
-int device_set_timer(DEVICE_p, unsigned int);
+int device_enqueue(DEVICE_p, PCB_p);
+int device_dequeue(DEVICE_p);
+void *device_run(void *);
 #endif 

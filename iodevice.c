@@ -9,11 +9,10 @@ DEVICE_p device_constructor(device_number_t io_id) {
 	
 	if(device && wait_queue) {
 		device->io_id = io_id;
-		device->timer = 0;
 		device->wait_queue = wait_queue;
 		int rc = pthread_mutex_init(&(device->mutex), NULL);
 		assert(rc == 0);
-		printf("RC VALUE: %d\n", rc);
+		pthread_create(&(device->device_thread), NULL, device_run, device);
 	}
 	return device;
 }
@@ -21,15 +20,44 @@ DEVICE_p device_constructor(device_number_t io_id) {
 int device_deconstructor(DEVICE_p  *device_ptr) {
 	if(! *device_ptr) return PTR_ERR;
 
+	int rc = pthread_cancel((*device_ptr)->device_thread);
+	assert(rc == 0);	
 	q_destructor( &( ( *device_ptr )->wait_queue ) );
+
 	free( *device_ptr);
 	*device_ptr = NULL;
 	return SUCCESS; 
 } 
 
-int device_set_timer(DEVICE_p device_ptr, unsigned int time) {
-	if(!device_ptr) return PTR_ERR;
-	device_ptr->timer = time;
+int device_enqueue(DEVICE_p device_ptr, PCB_p pcb_ptr) {
+	if(!device_ptr || !pcb_ptr) return PTR_ERR;
+	pthread_mutex_lock(&(device_ptr->mutex));
+	printf("Device num: %d ENQ LOCKED pcb_id: %d\n", device_ptr->io_id, pcb_ptr->pid);
+	q_enqueue(device_ptr->wait_queue, pcb_ptr); 
+	pthread_mutex_unlock(&(device_ptr->mutex));
+	printf("Device num: %d ENQ UNLOCKED pcb_id: %d\n", device_ptr->io_id, pcb_ptr->pid);
 	return SUCCESS;
 }
 
+int device_dequeue(DEVICE_p device_ptr) {
+	if(!device_ptr) return PTR_ERR;
+	pthread_mutex_lock(&(device_ptr->mutex));
+	printf("Device num: %d DEQ LOCKED\n", device_ptr->io_id);
+	PCB_p temp = q_dequeue(device_ptr->wait_queue);
+	//printf("In deque pcb_pid: %d\n ", temp->pid);
+	pthread_mutex_unlock(&(device_ptr->mutex));
+	printf("Device num: %d DEQ UNLOCKED\n", device_ptr->io_id);
+	if(temp) return temp->pid;
+	return -1;
+	//return device_ptr->io_id;
+}
+
+void *device_run(void * device_ptr) {
+	for(;;) {
+		DEVICE_p d = (DEVICE_p) device_ptr;
+		printf("Device num: %d in the runner\n", d->io_id);
+		sleep(1);
+		int temp = device_dequeue(d);
+		printf("After waking up the pid of dequed process is: *%d*\n", temp);
+	}
+}
