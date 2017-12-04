@@ -79,6 +79,7 @@ void scheduler() {
             }
             break;
         case TIMER_INTERRUPT:
+            if((rand() % 100) == 50) addPCB(); // context switch has a random chance to add a random process type
             dispatcher(0);
             break;
         case IO1_INTERRUPT:
@@ -90,12 +91,13 @@ void scheduler() {
         default:
             break;
     }
+    trap_flag = -1;
     interrupt_flag = -1;
 }
 
 void dispatcher(unsigned int trap_f) {
     if (currentprocess) {
-        currentprocess->pc = SYS_STACK;
+        currentprocess->context->pc = SYS_STACK;
         if (trap_f == 1) {
             device_enqueue(IOdevice1, currentprocess);
         } else if (trap_f == 2) {
@@ -105,7 +107,7 @@ void dispatcher(unsigned int trap_f) {
         }
     }
     currentprocess = p_q_dequeue(readyqueue);
-    SYS_STACK = currentprocess->pc;
+    SYS_STACK = currentprocess->context->pc;
 }
 
 void generateInitialPCBs() {
@@ -133,7 +135,7 @@ void generateInitialPCBs() {
 }
 
 void runProcess() {
-    PC++;
+    CPU_PC++;
     //check process type and take appropriate action
     switch (currentprocess->p_type) {
         case(IO):
@@ -162,11 +164,11 @@ void runProcess() {
 
 int checkIOTrap() {
     for(int i = 0; i < 4; i++){
-        if(PC == currentprocess->io_1_traps[i]){
-            printf("IOInterrupt request for device 1 at PC = %d.\n\n", PC);
+        if(CPU_PC == currentprocess->io_1_traps[i]){
+            printf("IOInterrupt request for device 1 at PC = %d.\n\n", CPU_PC);
             return 1;
-        } else if (PC == currentprocess->io_2_traps[i]){
-            printf("IOInterrupt request for device 2 at PC = %d.\n\n", PC);
+        } else if (CPU_PC == currentprocess->io_2_traps[i]){
+            printf("IOInterrupt request for device 2 at PC = %d.\n\n", CPU_PC);
             return 2;
         }
     }
