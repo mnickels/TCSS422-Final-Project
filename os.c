@@ -1,5 +1,6 @@
 
 #include "os.h"
+#include "timer.h"
 
 P_QUEUE_p readyqueue;
 QUEUE_p createdqueue;
@@ -103,7 +104,7 @@ void scheduler() {
     }
     trap_flag = -1;
     interrupt_flag = -1;
-    set_timer(get_priority_level_quantum_size(readyqueue, currentprocess));
+    set_timer(timer, get_priority_level_quantum_size(readyqueue, currentprocess));
 }
 
 void dispatcher(unsigned int trap_f) {
