@@ -10,15 +10,15 @@ typedef struct timer {
     int counter;
     pthread_mutex_t mutex;
 } timer_s;
-typedef * timer_s TIMER_p;
+typedef timer_s * TIMER_p;
 
 // only for the timer_thread to use
-void timer_run(TIMER_p);
+void * timer_run(TIMER_p);
 void timer_tick(TIMER_p);
 
 // methods for main thread to call
 TIMER_p timer_constructor(void);
-void timer_deconstructor(* TIMER_p);
-void set_timer(unsigned int);
+void timer_deconstructor(TIMER_p *);
+void set_timer(TIMER_p , unsigned int);
 
 #endif

@@ -1,4 +1,5 @@
 #include "os.h"
+#include "timer.h"
 
 P_QUEUE_p readyqueue;
 QUEUE_p createdqueue;
@@ -102,7 +103,7 @@ void scheduler() {
     }
     trap_flag = -1;
     interrupt_flag = -1;
-    set_timer(get_priority_level_quantum_size(readyqueue, currentprocess));
+    set_timer(timer, get_priority_level_quantum_size(readyqueue, currentprocess));
 }
 
 void dispatcher(unsigned int trap_f) {
@@ -193,7 +194,7 @@ void checkTermination() {
     }
     // check terminate queue size and empty if it reaches a certain size
     if (terminatedqueue->length >= 5) {
-        for (int i = 0; i < terminatedqueue->length; i++) {
+        while (!q_is_empty(terminatedqueue)) {
             pcb_deconstructor(q_dequeue(terminatedqueue));
         }
     }
@@ -256,5 +257,16 @@ void createPCB(enum process_type ptype) {
 }
 
 void resetQueue() {
-
+    QUEUE_p temp = q_constructor(0);
+    // move all pcbs out of the readyqueue
+    while (!p_q_is_empty(readyqueue)) {
+        q_enqueue(temp, p_q_dequeue(readyqueue));
+    }
+    // set all pcbs' priorities to zero and re-add to readyqueue
+    while (!q_is_empty(temp)) {
+        PCB_p temp_pcb = q_dequeue(temp);
+        temp_pcb->priority = 0;
+        p_q_enqueue(readyqueue, temp_pcb);
+    }
+    q_destructor(&temp);
 }

@@ -58,7 +58,7 @@ void *device_run(void * device_ptr) {
 	DEVICE_p d = (DEVICE_p) device_ptr;
 	for(;;) {
 
-		if (d->ready && device->wait_queue->length) {
+		if (d->ready && d->wait_queue->length) {
 			sleep(QUANTUM_SCALAR * 1500);
 			d->ready = 0; 
 			pseudo_ISR(d->io_id);

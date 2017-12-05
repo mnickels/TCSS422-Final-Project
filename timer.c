@@ -8,12 +8,12 @@ TIMER_p timer_constructor() {
 		timer->counter = -1;
 		int rc = pthread_mutex_init(&(timer->mutex), NULL);
 		assert(rc == 0);
-		pthread_create(&(timer->timer_thread), NULL, &timer_run(), timer);
+		pthread_create(&(timer->timer_thread), NULL, timer_run, timer);
 	}
 	return timer;
 }
 
-void timer_deconstructor(* TIMER_p timer) {
+void timer_deconstructor(TIMER_p * timer) {
 	if (timer) {
 		int rc = pthread_cancel(&((* timer)->timer_thread));
 		assert(rc == 0);
