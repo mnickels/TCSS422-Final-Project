@@ -1,9 +1,5 @@
 #include "ourmutex.h"
 
-MUTEX_p mutex_constructor(MUTEX_p mutex);
-int mutex_init(MUTEX_p mutex);
-int mutex_destructor(MUTEX_p mutex);
-
 int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
     if(!mutex->flag) {
         mutex->current_holder = requesting_process;
@@ -23,10 +19,8 @@ int mutex_trylock(MUTEX_p mutex, PCB_p requesting_process) {
         mutex->flag = 1;
         return 1;
     }
-    
     return 0;
 }
-
 
 int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
     if (mutex->flag) {
@@ -44,7 +38,6 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
     
     return 0;
 }
-
 
 MUTEX_p mutex_constructor() {
     MUTEX_p lock = calloc(1, sizeof(MUTEX_s));
