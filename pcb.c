@@ -66,9 +66,10 @@ char * cpu_context_to_string(CPU_context_p context_ptr) {
 
     char * str = (char *) malloc(sizeof(char) * MAX_CONTEXT_LEN);
     //format the string.
-    sprintf(str, "\n* PC:  0x%X\n* IR:  0x%X\n* PSR: 0x%X\n* R0:  0x%X\n* R1:  0x%X\n* R2:  0x%X\n"
-        "* R3:  0x%X\n* R4:  0x%X\n* R5:  0x%X\n* R6:  0x%X\n* R7:  0x%X\n"
-        "*********************"
+    sprintf(str, "\nPC:  0x%X IR:  0x%X PSR: 0x%X R0:  0x%X R1:  0x%X R2: 0x%X"
+        " R3: 0x%X R4: 0x%X R5: 0x%X R6: 0x%X R7: 0x%X\n"
+        "**********************************************"
+        "***********************************************************\n"
         , context_ptr->pc, context_ptr->ir, context_ptr->psr, context_ptr->r0, context_ptr->r1
         , context_ptr->r2, context_ptr->r3, context_ptr->r4, context_ptr->r5, context_ptr->r6
         , context_ptr->r7
@@ -100,7 +101,7 @@ int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
     pcb_ptr->max_pc = rand() % 3000 + 2000;         // values between [2000, 4999]
     pcb_ptr->termination = 0;
     pcb_ptr->terminate = rand() % 20 + 1;           // values between [1, 20]
-    pcb->ptr->term_count = 0;
+    pcb_ptr->term_count = 0;
     pcb_ptr->p_type = ptype;
 
     init_io_1(pcb_ptr);
@@ -146,13 +147,13 @@ char * pcb_to_string(PCB_p pcb_ptr) {
         return err;
     }
     //allocate temp memory for the context string,
-    char * temp = cpu_context_to_string(pcb_ptr->context);
-    char * str = (char *) malloc(sizeof(char) * MAX_PCB_LEN);
+    char *temp = cpu_context_to_string(pcb_ptr->context);
+    char *str = (char *) malloc(sizeof(char) * MAX_PCB_LEN);
     //format the string
-    sprintf(str, "*********************"
-        "\n* PID: 0x%X\n* STATE: 0x%X\n* PARENT: 0x%X\n* PRIORITY: 0x%X\n* MEM: 0x%p\n"
-        "* SIZE: 0x%X\n* CHANNEL_NO: 0x%X\n*"
-        "********************"
+    sprintf(str,         "**********************************************"
+        "***********************************************************\n"
+        "PID: 0x%X STATE: 0x%X PARENT: 0x%X PRIORITY: 0x%X MEM: 0x%p "
+        "SIZE: 0x%X CHANNEL_NO: 0x%X"
     , pcb_ptr->pid, pcb_ptr->state, pcb_ptr->parent, pcb_ptr->priority
     , pcb_ptr->mem, pcb_ptr->size, pcb_ptr->channel_no
     );

@@ -1,4 +1,5 @@
 #include "iodevice.h"
+#include "timer.h"
 
 DEVICE_p device_constructor(device_number_t io_id) {
 	
@@ -14,8 +15,10 @@ DEVICE_p device_constructor(device_number_t io_id) {
 		int rc = pthread_mutex_init(&(device->mutex), NULL);
 		assert(rc == 0);
 		pthread_create(&(device->device_thread), NULL, device_run, device);
-	}
-	return device;
+		return device;
+	} 
+	return NULL;
+//	return device;
 }
 
 int device_deconstructor(DEVICE_p  *device_ptr) {
@@ -33,21 +36,21 @@ int device_deconstructor(DEVICE_p  *device_ptr) {
 int device_enqueue(DEVICE_p device_ptr, PCB_p pcb_ptr) {
 	if(!device_ptr || !pcb_ptr) return PTR_ERR;
 	pthread_mutex_lock(&(device_ptr->mutex));
-	printf("Device num: %d ENQ LOCKED pcb_id: %d\n", device_ptr->io_id, pcb_ptr->pid);
+	//printf("Device num: %d ENQ LOCKED pcb_id: %d\n", device_ptr->io_id, pcb_ptr->pid);
 	q_enqueue(device_ptr->wait_queue, pcb_ptr); 
 	pthread_mutex_unlock(&(device_ptr->mutex));
-	printf("Device num: %d ENQ UNLOCKED pcb_id: %d\n", device_ptr->io_id, pcb_ptr->pid);
+	//printf("Device num: %d ENQ UNLOCKED pcb_id: %d\n", device_ptr->io_id, pcb_ptr->pid);
 	return SUCCESS;
 }
 
 PCB_p device_dequeue(DEVICE_p device_ptr) {
 	if(!device_ptr) return PTR_ERR;
 	pthread_mutex_lock(&(device_ptr->mutex));
-	printf("Device num: %d DEQ LOCKED\n", device_ptr->io_id);
+	//printf("Device num: %d DEQ LOCKED\n", device_ptr->io_id);
 	PCB_p temp = q_dequeue(device_ptr->wait_queue);
 	//printf("In deque pcb_pid: %d\n ", temp->pid);
 	pthread_mutex_unlock(&(device_ptr->mutex));
-	printf("Device num: %d DEQ UNLOCKED\n", device_ptr->io_id);
+	//printf("Device num: %d DEQ UNLOCKED\n", device_ptr->io_id);
 	return temp;
 }
 
@@ -60,8 +63,6 @@ void *device_run(void * device_ptr) {
 			d->ready = 0; 
 			pseudo_ISR(d->io_id);
 		}
-
-		
 		// printf("Device num: %d in the runner\n", d->io_id);
 		// sleep(1);
 		// int temp = device_dequeue(d);

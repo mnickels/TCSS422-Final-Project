@@ -1,4 +1,3 @@
-
 #include "os.h"
 
 P_QUEUE_p readyqueue;

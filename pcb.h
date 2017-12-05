@@ -157,7 +157,7 @@ int pcb_set_pid(PCB_p pcb_ptr);
 * Initializes the pcb members.
 * If pcb_ptr is invalid returns a -1 otherwise 0.
 */
-int pcb_init(PCB_p pcb_ptr);
+int pcb_init(PCB_p, enum process_type);
 
 /*
 * Write the contentens of this PCB as a string to the
