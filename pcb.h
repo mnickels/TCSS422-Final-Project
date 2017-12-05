@@ -8,6 +8,7 @@
 #define MAX_PCB_LEN 500								// Max length pcb representation string can be.
 #define MAX_CONTEXT_LEN 300							// Max length cpu_context representation string can be.
 #define NUM_PRIORITIES 16
+#define FORCE_DEADLOCK 0
 
 #include <stdlib.h>
 #include <string.h>
@@ -48,7 +49,7 @@ typedef CPU_context_s * CPU_context_p;
 */
 enum state_type {new, ready, running, interrupted, waiting, halted};
 enum process_type {IO, CI, PrCo, MR};
-enum pc_pair_type {producer, consumer};
+enum pc_pair_type {producer, consumer, A, B};
 
 /*
 * Process control block struct.
@@ -73,9 +74,14 @@ typedef struct pcb {
 	enum process_type p_type;
 	enum pc_pair_type pair_type;
 	unsigned int * shared_resource;
-	MUTEX_p * mutex;
+	MUTEX_p mutexR1;
+	MUTEX_p mutexR2;
 	unsigned int pair_id;
 	unsigned int waiting_on_lock:1;
+	unsigned int sync_array_lockR1[4];
+	unsigned int sync_array_lockR2[4];
+	unsigned int sync_array_unlockR1[4];
+	unsigned int sync_array_unlockR2[4];
 
 } PCB_s;
 

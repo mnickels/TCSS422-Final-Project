@@ -241,7 +241,7 @@ void createPCB(enum process_type ptype) {
         case(PrCo):
             pcb = pcb_constructor(PrCo);
             pcb2 = pcb_constructor(PrCo);
-            assignPair(pcb, pcb2);
+            assignPCPair(pcb, pcb2);
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
             PCB_COUNT += 2;
@@ -249,7 +249,7 @@ void createPCB(enum process_type ptype) {
         case(MR):
             pcb = pcb_constructor(MR);
             pcb2 = pcb_constructor(MR);
-            assignPair(pcb, pcb2);
+            assignMRPair(pcb, pcb2);
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
             PCB_COUNT += 2;

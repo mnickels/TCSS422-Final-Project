@@ -108,7 +108,6 @@ int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
     init_io_1(pcb_ptr);
     init_io_2(pcb_ptr);
 
-
     return NO_ERR;
 }
 
@@ -125,7 +124,7 @@ int pcb_set_pid(PCB_p pcb_ptr){
     return NO_ERR;
 }
 
-int assignPair(PCB_p pcb_p, PCB_p pcb_c) {
+int assignPCPair(PCB_p pcb_p, PCB_p pcb_c) {
     if (check_pointer(pcb_p) == NO_OBJ_ERR || check_pointer(pcb_c) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_p->pair_type = producer;
     pcb_c->pair_type = consumer;
@@ -135,9 +134,41 @@ int assignPair(PCB_p pcb_p, PCB_p pcb_c) {
     MUTEX_p mutex = calloc(1, sizeof(MUTEX_s));
     pcb_c->shared_resource = shared_resource;
     pcb_p->shared_resource = shared_resource;
-    pcb_p->mutex = mutex;
-    pcb_c->mutex = mutex;
+    pcb_p->mutexR1 = mutex;
+    pcb_c->mutexR1 = mutex;
+    init_sync_arrays(pcb_p, pcb_c);
     return NO_ERR;
+}
+
+int assignMRPAir(PCB_p pcb_a, PCB_p pcb_b){
+    if (check_pointer(pcb_p) == NO_OBJ_ERR || check_pointer(pcb_c) == NO_OBJ_ERR) return NO_OBJ_ERR;
+    pcb_a->pair_type = A;
+    pcb_b->pair_type = B;
+    pcb_a->pair_id = PAIR_ID;
+    pcb_b->pair_id = PAIR_ID++;
+    unsigned int * shared_resource = calloc(1, sizeof(int));
+    MUTEX_p mutex1 = calloc(1, sizeof(MUTEX_s));
+    MUTEX_p mutex2 = calloc(1, sizeof(MUTEX_s));
+    pcb_a->shared_resource = shared_resource;
+    pcb_b->shared_resource = shared_resource;
+    pcb_a->mutexR1 = mutex1;
+    pcb_a->mutexR2 = mutex2;
+    pcb_b->mutexR1 = mutex1;
+    pcb_b->mutexR2 = mutex2;
+    if (!FORCE_DEADLOCK) {
+        init_sync_arrays(pcb_a, pcb_b);
+    } else {
+        init_dl_sync_arrays(pcb_a, pcb_b);
+    }
+    return NO_ERR;
+}
+
+void init_sync_arrays(PCB_p pcb_p, PCB_p pcb_c) {
+
+}
+
+void init_dl_sync_arrays(PCB_p pcb_p, PCB_p pcb_c) {
+
 }
 
 char * pcb_to_string(PCB_p pcb_ptr) {
