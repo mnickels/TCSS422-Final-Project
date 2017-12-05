@@ -267,7 +267,7 @@ void resetQueue() {
     while (!q_is_empty(temp)) {
         PCB_p temp_pcb = q_dequeue(temp);
         temp_pcb->priority = 0;
-        p_q_enqueue(temp_pcb);
+        p_q_enqueue(readyqueue, temp_pcb);
     }
     q_destructor(&temp);
 }
