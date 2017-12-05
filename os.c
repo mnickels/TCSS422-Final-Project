@@ -1,5 +1,4 @@
 #include "os.h"
-#include "timer.h"
 
 P_QUEUE_p readyqueue;
 QUEUE_p createdqueue;
@@ -22,7 +21,6 @@ int main() {
     IOdevice1 = device_constructor(DEVICE_1);
     IOdevice2 = device_constructor(DEVICE_2);
     timer = timer_constructor();
-    //initialize timer
     CPU_PC = 0;
     PCB_COUNT = 0;
     interrupt_flag = -1;
@@ -47,13 +45,16 @@ int main() {
             resetQueue();
         }
 
-        if (CPU_PC >= currentprocess->max_pc) {
-            currentprocess->term_count++;
-            checkTermination();
-            CPU_PC = 0;
-        } else {
-            CPU_PC++;
+        if (!current_process->waiting_on_lock) {
+            if (CPU_PC >= currentprocess->max_pc) {
+                currentprocess->term_count++;
+                checkTermination();
+                CPU_PC = 0;
+            } else {
+                CPU_PC++;
+            }
         }
+        
 
         if (CPU_PC == 1000) break;
     }
@@ -154,15 +155,18 @@ void runProcess() {
         case(CI):
             break;
         case(PrCo):
-            if(currentprocess->pair_type == producer) {
-                pthread_mutex_lock(currentprocess->mutex);
-                currentprocess->shared_resource++;
-                pthread_mutex_unlock(currentprocess->mutex);
-            } else {
-                pthread_mutex_lock(currentprocess->mutex);
-                printf("Consumer Process Pair ID %d: val = %d", currentprocess->pair_id, currentprocess->shared_resource);
-                pthread_mutex_unlock(currentprocess->mutex);
+            if (!currentprocess->waiting_on_lock){
+                if(currentprocess->pair_type == producer) {
+                    mutex_lock(currentprocess->mutex);
+                    currentprocess->shared_resource++;
+                    mutex_unlock(currentprocess->mutex);
+                } else {
+                    mutex_lock(currentprocess->mutex);
+                    printf("Consumer Process Pair ID %d: val = %d", currentprocess->pair_id, currentprocess->shared_resource);
+                    mutex_unlock(currentprocess->mutex);
+                }
             }
+            
             break;
         case(MR):
             //do mutual resource stuff

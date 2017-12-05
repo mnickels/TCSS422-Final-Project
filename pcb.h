@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
+#include "ourmutex.h"
 
 /*
 * The process identification number.
@@ -72,8 +73,10 @@ typedef struct pcb {
 	enum process_type p_type;
 	enum pc_pair_type pair_type;
 	unsigned int * shared_resource;
-	pthread_mutex_t * mutex;
+	MUTEX_p * mutex;
 	unsigned int pair_id;
+	unsigned int waiting_on_lock:1;
+
 } PCB_s;
 
 /*

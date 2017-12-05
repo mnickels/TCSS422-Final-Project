@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "timer.h"
+#include "ourmutex.h"
 
 #define IO_PROCESS_LIMIT 50
 #define CI_PROCESS_LIMIT 25

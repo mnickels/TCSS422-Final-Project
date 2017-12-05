@@ -103,6 +103,7 @@ int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
     pcb_ptr->terminate = rand() % 20 + 1;           // values between [1, 20]
     pcb_ptr->term_count = 0;
     pcb_ptr->p_type = ptype;
+    pcb_ptr->waiting_on_lock = 0;
 
     init_io_1(pcb_ptr);
     init_io_2(pcb_ptr);
@@ -131,7 +132,7 @@ int assignPair(PCB_p pcb_p, PCB_p pcb_c) {
     pcb_p->pair_id = PAIR_ID;
     pcb_c->pair_id = PAIR_ID++;
     unsigned int * shared_resource = calloc(1, sizeof(int));
-    pthread_mutex_t * mutex = calloc(1, sizeof(pthread_mutex_t));
+    MUTEX_p mutex = calloc(1, sizeof(MUTEX_s));
     pcb_c->shared_resource = shared_resource;
     pcb_p->shared_resource = shared_resource;
     pcb_p->mutex = mutex;
