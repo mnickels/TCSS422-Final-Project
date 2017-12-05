@@ -8,8 +8,7 @@ typedef struct mutex {
 } MUTEX_s;
 typedef MUTEX_s * MUTEX_p;
 
-MUTEX_p mutex_constructor(MUTEX_p mutex);
-int mutex_init(MUTEX_p mutex);
+MUTEX_p mutex_constructor();
 int mutex_destructor(MUTEX_p mutex);
 int mutex_lock(MUTEX_p mutex, PCB_p requesting_process);
 int mutex_trylock(MUTEX_p mutex, PCB_p requesting_process);
