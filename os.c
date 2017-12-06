@@ -77,18 +77,21 @@ void psuedo_ISR(interrupt_t interrupt) {
                 interrupt_flag = interrupt;
             }
             break;
+        case TIMER_INTERRUPT:
+            break;
     }
     pthread_mutex_unlock(&interrupt_mutex);
 }
 
 void scheduler() {
+    PCB_p process;
     switch(interrupt_flag){
         case -1:
             switch(trap_flag){
                 case -1:
                     //check created queue and add them to readyqueue
                     for (int i = 0; i < createdqueue->length; i++) {
-                        PCB_p process = q_dequeue(createdqueue);
+                        process = q_dequeue(createdqueue);
                         process->state = ready;
                         p_q_enqueue(readyqueue, process);
                     }
@@ -112,12 +115,12 @@ void scheduler() {
             dispatcher(0);
             break;
         case IO1_INTERRUPT:
-            PCB_p process = device_dequeue(IOdevice1);
+            process = device_dequeue(IOdevice1);
             process->state = ready;
             p_q_enqueue(readyqueue, process);
             break;
         case IO2_INTERRUPT:
-            PCB_p process = device_dequeue(IOdevice2);
+            process = device_dequeue(IOdevice2);
             process->state = ready;
             p_q_enqueue(readyqueue, process);
             break;
