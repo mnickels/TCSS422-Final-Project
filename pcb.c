@@ -214,6 +214,18 @@ char * pcb_to_string(PCB_p pcb_ptr) {
     return str;
 }  
 
+char * pcb_simple_to_string(PCB_p pcb_ptr){
+    if (check_pointer(pcb_ptr) == NO_OBJ_ERR) {
+        char *err = malloc (sizeof (char));
+        err[0] = NO_OBJ_ERR;
+        return err;
+    }
+
+    char *str = (char *) malloc(sizeof(char) * MAX_PCB_LEN);
+    sprintf(str, "PCB %d", pcb_ptr->pid);
+    return str;
+}
+
 void init_io_1(PCB_p my_pcb) {
     for(int i = 0; i < 4; i++) {
         my_pcb->io_1_traps[i] = rand() % 400 + (i * (rand() % 100 + 300));
