@@ -148,6 +148,7 @@ void generateInitialPCBs() {
 
 void runProcess() {
     //check process type and take appropriate action
+    int action = 0;
     switch (currentprocess->p_type) {
         case(IO):
             trap_flag = checkIOTrap();
@@ -155,25 +156,88 @@ void runProcess() {
         case(CI):
             break;
         case(PrCo):
-            if (!currentprocess->waiting_on_lock){
-                if(currentprocess->pair_type == producer) {
-                    mutex_lock(currentprocess->mutex);
-                    currentprocess->shared_resource++;
-                    mutex_unlock(currentprocess->mutex);
-                } else {
-                    mutex_lock(currentprocess->mutex);
-                    printf("Consumer Process Pair ID %d: val = %d", currentprocess->pair_id, currentprocess->shared_resource);
-                    mutex_unlock(currentprocess->mutex);
-                }
+            action = checkPCAction(currentprocess);
+            switch(action) {
+                case 0:
+                    break;
+                case 1:
+                    mutex_lock(currentprocess->mutexR1, currentprocess);
+                    if (currentprocess->pair_type == producer) {
+                        currentprocess->shared_resource++;
+                        printf("Producer %d incremented variable %d: %d\n", currentprocess->pid, currentprocess->pair_id, current_process->shared_resource);
+                    } else{
+                        printf("Consumer %d read variable %d: %d\n", currentprocess->pid, currentprocess->pair_id);
+                    }
+                    break;
+                case 2:
+                    mutex_unlock(currentprocess->mutexR1, currentprocess);
+                    break;
+                default:
+                    break;
             }
+            // if (!currentprocess->waiting_on_lock){
+            //     if(currentprocess->pair_type == producer) {
+            //         mutex_lock(currentprocess->mutex);
+            //         currentprocess->shared_resource++;
+            //         mutex_unlock(currentprocess->mutex);
+            //     } else {
+            //         mutex_lock(currentprocess->mutex);
+            //         printf("Consumer Process Pair ID %d: val = %d", currentprocess->pair_id, currentprocess->shared_resource);
+            //         mutex_unlock(currentprocess->mutex);
+            //     }
+            // }
             
             break;
         case(MR):
-            //do mutual resource stuff
+            action = checkMRAction(currentprocess);
+            switch(action) {
+                case 0:
+                    break;
+                case 1:
+                    mutex_lock(currentprocess->mutexR1, currentprocess);
+                    break;
+                case 2:
+                    mutex_unlock(currentprocess->mutexR1, currentprocess);
+                    break;
+                case 3:
+                    mutex_lock(currentprocess->mutexR2, currentprocess);
+                    printf("Both resources for MR pair %d are used\n", currentprocess->pair_id);
+                    break;
+                case 4:
+                    mutex_unlock(currentprocess->mutexR2, currentprocess);
+                    break;
+                default:
+                    break;
+            }
             break;
         default:
             break;
     }
+}
+
+int checkPCAction(PCB_p pcb) {
+    for(int i = 0; i < 4; i++) {
+        if (CPU_PC == pcb->sync_array_lockR1[i]) {
+            return 1;
+        } else if (CPU_PC == pcb->sync_array_unlockR1[i]) {
+            return 2;
+    }
+    return 0;
+}
+
+int checkMRAction(PCB_p pcb) {
+    for (int i = 0; i < 4; i++) {
+        if (CPU_PC == pcb->sync_array_lockR1[i]) {
+            return 1;
+        } else if (CPU_PC == pcb->sync_array_unlockR1[i]) {
+            return 2;
+        } else if (CPU_PC == pcb->sync_array_lockR2[i]) {
+            return 3;
+        } else if (CPU_PC == pcb->sync_array_unlockR2[i]) {
+            return 4;
+        }
+    }
+    return 0;
 }
 
 int checkIOTrap() {
