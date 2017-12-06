@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <time.h>
-#include "ourmutex.h"
 
 /*
 * The process identification number.
@@ -74,8 +73,8 @@ typedef struct pcb {
 	enum process_type p_type;
 	enum pc_pair_type pair_type;
 	unsigned int * shared_resource;
-	MUTEX_p mutexR1;
-	MUTEX_p mutexR2;
+	void * mutexR1;									// need to cast to MUTEX_p
+	void * mutexR2;									// need to cast to MUTEX_p
 	unsigned int pair_id;
 	unsigned int waiting_on_lock:1;
 	unsigned int sync_array_lockR1[4];
@@ -185,5 +184,10 @@ void init_io_1(PCB_p);
 */
 
 void init_io_2(PCB_p);
+
+void init_sync_arrays(PCB_p, PCB_p );
+void init_dl_sync_arrays(PCB_p, PCB_p);
+int assignMRPair(PCB_p , PCB_p);
+int assignPCPair(PCB_p, PCB_p);
 
 #endif

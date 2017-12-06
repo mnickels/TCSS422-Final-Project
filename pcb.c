@@ -6,6 +6,7 @@ Joshua Meigs
 Yaroslav Salo
 */
 #include "pcb.h"
+#include "ourmutex.h"
 unsigned int GLOBAL_PID = 1;
 unsigned int PAIR_ID = 1;
 
@@ -140,8 +141,8 @@ int assignPCPair(PCB_p pcb_p, PCB_p pcb_c) {
     return NO_ERR;
 }
 
-int assignMRPAir(PCB_p pcb_a, PCB_p pcb_b){
-    if (check_pointer(pcb_p) == NO_OBJ_ERR || check_pointer(pcb_c) == NO_OBJ_ERR) return NO_OBJ_ERR;
+int assignMRPair(PCB_p pcb_a, PCB_p pcb_b){
+    if (check_pointer(pcb_a) == NO_OBJ_ERR || check_pointer(pcb_a) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_a->pair_type = A;
     pcb_b->pair_type = B;
     pcb_a->pair_id = PAIR_ID;

@@ -45,7 +45,7 @@ int main() {
             resetQueue();
         }
 
-        if (!current_process->waiting_on_lock) {
+        if (!currentprocess->waiting_on_lock) {
             if (CPU_PC >= currentprocess->max_pc) {
                 currentprocess->term_count++;
                 checkTermination();
@@ -104,7 +104,7 @@ void scheduler() {
     }
     trap_flag = -1;
     interrupt_flag = -1;
-    set_timer(timer, get_priority_level_quantum_size(readyqueue, currentprocess));
+    set_timer(timer, get_priority_level_quantum_size(readyqueue, currentprocess->priority));
 }
 
 void dispatcher(unsigned int trap_f) {
@@ -199,7 +199,8 @@ void checkTermination() {
     // check terminate queue size and empty if it reaches a certain size
     if (terminatedqueue->length >= 5) {
         while (!q_is_empty(terminatedqueue)) {
-            pcb_deconstructor(q_dequeue(terminatedqueue));
+            PCB_p temp = q_dequeue(terminatedqueue);
+            pcb_deconstructor(&temp);
         }
     }
 }

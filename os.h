@@ -2,7 +2,6 @@
 #define OS_H
 
 #include "p_queue.h"
-#include "ourthread.h"
 #include "timer.h"
 #include "iodevice.h"
 #include <stdio.h>
@@ -11,6 +10,7 @@
 #include <time.h>
 #include "timer.h"
 #include "ourmutex.h"
+#include "pcb.h"
 
 #define IO_PROCESS_LIMIT 50
 #define CI_PROCESS_LIMIT 25
@@ -26,7 +26,7 @@ void dispatcher();
 void generateInitialPCBs();
 void runProcess();
 int checkIOInterrupt();
-int checkTermination();
+void checkTermination();
 void generatePCBs();
 void resetQueue();
 
@@ -35,6 +35,9 @@ void resetQueue();
 void pseudo_ISR();
 void scheduler();
 void dispatcher();
+void addPCB();
+void createPCB(enum process_type);
+int checkIOTrap();
 // void pseudoIRET();
 // void terminate();
 
