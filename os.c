@@ -41,13 +41,13 @@ int main() {
         }
 
         if (!currentprocess->waiting_on_lock) {
+            runProcess();
             if (CPU_PC >= currentprocess->max_pc) {
                 currentprocess->term_count++;
                 CPU_PC = 0;
                 checkTermination();
             } else {
                 CPU_PC++;
-                runProcess();
             }
         }
 
