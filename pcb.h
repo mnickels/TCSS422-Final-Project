@@ -187,4 +187,5 @@ void init_sync_arrays(PCB_p);
 void init_dl_sync_arrays(PCB_p);
 int assignMRPair(PCB_p , PCB_p);
 int assignPCPair(PCB_p, PCB_p);
+char * pcb_simple_to_string(PCB_p);
 #endif

@@ -96,7 +96,7 @@ void scheduler() {
         case TIMER_INTERRUPT:
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
             // chance to add random PCB
-            if((rand() % 100) == 0) {
+            if((rand() % 50) == 0) {
                 printf("Added a new pcb\n");
                 addPCB(); // context switch has a random chance to add a random process type
             }
@@ -141,7 +141,11 @@ void scheduler() {
 }
 
 void dispatcher() {
+    char * temp;
     if (currentprocess) {
+        temp = pcb_simple_to_string(currentprocess);
+        printf("Current process %s ", temp);
+        free(temp);
         currentprocess->context->pc = SYS_STACK;
         if (trap_flag == IO1_TRAP) {
             currentprocess->state = waiting;
@@ -156,6 +160,9 @@ void dispatcher() {
         }
     }
     currentprocess = p_q_dequeue(readyqueue);
+    temp = pcb_simple_to_string(currentprocess);
+    printf("context switch to %s\n", temp);
+    free(temp);
     currentprocess->state = running;
     SYS_STACK = currentprocess->context->pc;
 }
@@ -311,6 +318,7 @@ void checkTermination() {
         q_enqueue(terminatedqueue, currentprocess);
         currentprocess = NULL;
         pthread_mutex_lock(&interrupt_mutex);
+        interrupt_flag = TIMER_INTERRUPT;
         scheduler();
         pthread_mutex_unlock(&interrupt_mutex);
     }
