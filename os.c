@@ -10,7 +10,7 @@ PCB_p currentprocess;
 unsigned int CPU_PC;
 unsigned int SYS_STACK;
 int PCB_COUNT;
-int interrupt_flag;
+interrupt_t interrupt_flag;
 pthread_mutex_t interrupt_mutex;
 int trap_flag;
 
@@ -38,7 +38,9 @@ int main() {
             printf("%s\n...\n\n", pqs);
         }
         
+        pthread_mutex_lock(&interrupt_mutex);
         if (interrupt_flag != -1) scheduler();
+        pthread_mutex_unlock(&interrupt_mutex);
 
         runProcess();
         if (trap_flag != -1) scheduler();
@@ -65,7 +67,17 @@ int main() {
 // gets called by the timer and IO devices
 void psuedo_ISR(interrupt_t interrupt) {
     pthread_mutex_lock(&interrupt_mutex);
-    interrupt_flag = interrupt;
+    switch (interrupt_flag) {
+        case NO_INTERRUPT:
+        case IO2_INTERRUPT:
+            interrupt_flag = interrupt;
+            break;
+        case IO1_INTERRUPT:
+            if (interrupt == TIMER_INTERRUPT) {
+                interrupt_flag = interrupt;
+            }
+            break;
+    }
     pthread_mutex_unlock(&interrupt_mutex);
 }
 
