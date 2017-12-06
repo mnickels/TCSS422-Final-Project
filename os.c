@@ -44,7 +44,7 @@ int main() {
             if (CPU_PC >= currentprocess->max_pc) {
                 currentprocess->term_count++;
                 CPU_PC = 0;
-                checkTermination();    
+                checkTermination();
             } else {
                 CPU_PC++;
                 runProcess();
