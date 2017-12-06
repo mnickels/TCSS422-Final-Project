@@ -334,7 +334,7 @@ int checkIOTrap() {
 
 void checkTermination() {
     // check if the current process can be terminated, and its term_count == 0
-    if (currentprocess->can_terminate && currentprocess->term_count >= currentprocess->terminate) {
+    if (currentprocess->terminate && currentprocess->term_count >= currentprocess->terminate) {
 
         char * pcbs = pcb_to_string(currentprocess);
         printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
