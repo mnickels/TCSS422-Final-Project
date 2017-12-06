@@ -132,7 +132,7 @@ int assignPCPair(PCB_p pcb_p, PCB_p pcb_c) {
     pcb_p->pair_id = PAIR_ID;
     pcb_c->pair_id = PAIR_ID++;
     unsigned int * shared_resource = calloc(1, sizeof(int));
-    MUTEX_p mutex = calloc(1, sizeof(MUTEX_s));
+    MUTEX_p mutex = mutex_constructor();
     pcb_c->shared_resource = shared_resource;
     pcb_p->shared_resource = shared_resource;
     pcb_p->mutexR1 = mutex;
@@ -149,8 +149,8 @@ int assignMRPair(PCB_p pcb_a, PCB_p pcb_b){
     pcb_a->pair_id = PAIR_ID;
     pcb_b->pair_id = PAIR_ID++;
     unsigned int * shared_resource = calloc(1, sizeof(int));
-    MUTEX_p mutex1 = calloc(1, sizeof(MUTEX_s));
-    MUTEX_p mutex2 = calloc(1, sizeof(MUTEX_s));
+    MUTEX_p mutex1 = mutex_constructor();
+    MUTEX_p mutex2 = mutex_constructor();
     pcb_a->shared_resource = shared_resource;
     pcb_b->shared_resource = shared_resource;
     pcb_a->mutexR1 = mutex1;
@@ -198,9 +198,9 @@ char * pcb_to_string(PCB_p pcb_ptr) {
     //format the string
     sprintf(str,         "**********************************************"
         "***********************************************************\n"
-        "PID: 0x%X STATE: 0x%X PARENT: 0x%X PRIORITY: 0x%X MEM: 0x%p "
+        "PID: 0x%X STATE: 0x%X TYPE: 0x%X PARENT: 0x%X PRIORITY: 0x%X MEM: 0x%p "
         "SIZE: 0x%X CHANNEL_NO: 0x%X"
-    , pcb_ptr->pid, pcb_ptr->state, pcb_ptr->parent, pcb_ptr->priority
+    , pcb_ptr->pid, pcb_ptr->state, pcb_ptr->p_type, pcb_ptr->parent, pcb_ptr->priority
     , pcb_ptr->mem, pcb_ptr->size, pcb_ptr->channel_no
     );
 

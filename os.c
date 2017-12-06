@@ -60,7 +60,7 @@ int main() {
         }
         
 
-        if (CPU_PC == 1000) break;
+        //if (CPU_PC == 1000) break;
     }
 }
 
