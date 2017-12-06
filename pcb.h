@@ -90,7 +90,6 @@ typedef struct pcb {
 */
 typedef PCB_s * PCB_p;
 
-
 /**********************************************
 *  CPU_context_s MEMBER FUNCTIONS PROTOTYPES  *
 ***********************************************/
