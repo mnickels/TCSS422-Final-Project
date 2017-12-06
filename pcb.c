@@ -171,7 +171,7 @@ int assignMRPair(PCB_p pcb_a, PCB_p pcb_b){
 }
 
 void init_sync_arrays(PCB_p pcb) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 16; i += 4) {
         pcb->sync_array_lockR1[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
         pcb->sync_array_lockR2[i / 4] = pcb->max_pc / 16 * (i + 1) + (rand() % pcb->max_pc / 16);
         pcb->sync_array_unlockR2[i / 4] = pcb->max_pc / 16 * (i + 2) + (rand() % pcb->max_pc / 16);
@@ -180,7 +180,7 @@ void init_sync_arrays(PCB_p pcb) {
 }
 
 void init_dl_sync_arrays(PCB_p pcb) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 16; i += 4) {
         pcb->sync_array_lockR2[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
         pcb->sync_array_lockR1[i / 4] = pcb->max_pc / 16 * (i + 1) + (rand() % pcb->max_pc / 16);
         pcb->sync_array_unlockR1[i / 4] = pcb->max_pc / 16 * (i + 2) + (rand() % pcb->max_pc / 16);
