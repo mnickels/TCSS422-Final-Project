@@ -76,7 +76,9 @@ void scheduler() {
                 case -1:
                     //check created queue and add them to readyqueue
                     for (int i = 0; i < createdqueue->length; i++) {
-                        p_q_enqueue(readyqueue, q_dequeue(createdqueue));
+                        PCB_p process = q_dequeue(createdqueue);
+                        process->state = ready;
+                        p_q_enqueue(readyqueue, process);
                     }
 
                     dispatcher(0);
@@ -98,10 +100,14 @@ void scheduler() {
             dispatcher(0);
             break;
         case IO1_INTERRUPT:
-            p_q_enqueue(readyqueue, device_dequeue(IOdevice1));
+            PCB_p process = device_dequeue(IOdevice1);
+            process->state = ready;
+            p_q_enqueue(readyqueue, process);
             break;
         case IO2_INTERRUPT:
-            p_q_enqueue(readyqueue, device_dequeue(IOdevice2));
+            PCB_p process = device_dequeue(IOdevice2);
+            process->state = ready;
+            p_q_enqueue(readyqueue, process);
             break;
         default:
             break;
@@ -115,14 +121,18 @@ void dispatcher(unsigned int trap_f) {
     if (currentprocess) {
         currentprocess->context->pc = SYS_STACK;
         if (trap_f == 1) {
+            currentprocess->state = waiting;
             device_enqueue(IOdevice1, currentprocess);
         } else if (trap_f == 2) {
+            currentprocess->state = waiting;
             device_enqueue(IOdevice2, currentprocess);
         } else {
+            currentprocess->state = ready;
             p_q_enqueue(readyqueue, currentprocess);
         }
     }
     currentprocess = p_q_dequeue(readyqueue);
+    currentprocess->state = running;
     SYS_STACK = currentprocess->context->pc;
 }
 
@@ -261,6 +271,7 @@ int checkIOTrap() {
 void checkTermination() {
     // check if the current process can be terminated, and its term_count == 0
     if (currentprocess->terminate && currentprocess->term_count >= currentprocess->terminate) {
+        currentprocess->state = halted;
         q_enqueue(terminatedqueue, currentprocess);
         currentprocess = NULL;
         scheduler();
@@ -339,6 +350,7 @@ void resetQueue() {
     // set all pcbs' priorities to zero and re-add to readyqueue
     while (!q_is_empty(temp)) {
         PCB_p temp_pcb = q_dequeue(temp);
+        temp_pcb->state = ready;
         temp_pcb->priority = 0;
         p_q_enqueue(readyqueue, temp_pcb);
     }
