@@ -2,6 +2,8 @@
 #define TIMER_H
 
 #include <pthread.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define QUANTUM_SCALAR 50000000	// 50 ms
 
@@ -13,7 +15,7 @@ typedef struct timer {
 typedef timer_s * TIMER_p;
 
 // only for the timer_thread to use
-void * timer_run(TIMER_p);
+void * timer_run(void *);
 void timer_tick(TIMER_p);
 
 // methods for main thread to call

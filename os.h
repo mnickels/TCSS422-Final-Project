@@ -38,6 +38,8 @@ void dispatcher();
 void addPCB();
 void createPCB(enum process_type);
 int checkIOTrap();
+int checkPCAction(PCB_p);
+int checkMRAction(PCB_p);
 // void pseudoIRET();
 // void terminate();
 

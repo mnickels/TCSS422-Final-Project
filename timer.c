@@ -1,4 +1,3 @@
-#include <time.h>
 #include <assert.h>
 #include "timer.h"
 
@@ -15,7 +14,7 @@ TIMER_p timer_constructor() {
 
 void timer_deconstructor(TIMER_p * timer) {
 	if (timer) {
-		int rc = pthread_cancel(&((* timer)->timer_thread));
+		int rc = pthread_cancel((* timer)->timer_thread);
 		assert(rc == 0);
 
 		free(* timer);
@@ -23,12 +22,12 @@ void timer_deconstructor(TIMER_p * timer) {
 	}
 }
 
-void * timer_run(TIMER_p timer) {
-	struct timespec * ts;
-	ts->tv_sec = 0;
+void * timer_run(void * timer) {
+	struct timespec * ts = calloc(1, sizeof(timespec));
+	ts->tv_sec = (time_t) 0;
 	ts->tv_nsec = QUANTUM_SCALAR;
 	for(;;) {
-		timer_tick(timer);
+		timer_tick((TIMER_p) timer);
 		nanosleep(ts, NULL);
 	}
 }

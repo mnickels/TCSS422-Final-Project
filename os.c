@@ -164,9 +164,9 @@ void runProcess() {
                     mutex_lock(currentprocess->mutexR1, currentprocess);
                     if (currentprocess->pair_type == producer) {
                         currentprocess->shared_resource++;
-                        printf("Producer %d incremented variable %d: %d\n", currentprocess->pid, currentprocess->pair_id, current_process->shared_resource);
+                        printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                     } else{
-                        printf("Consumer %d read variable %d: %d\n", currentprocess->pid, currentprocess->pair_id);
+                        printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                     }
                     break;
                 case 2:
@@ -201,7 +201,7 @@ void runProcess() {
                     break;
                 case 3:
                     mutex_lock(currentprocess->mutexR2, currentprocess);
-                    printf("Both resources for MR pair %d are used\n", currentprocess->pair_id);
+                    printf("Both resources for MR pair %u are used\n", currentprocess->pair_id);
                     break;
                 case 4:
                     mutex_unlock(currentprocess->mutexR2, currentprocess);
@@ -221,6 +221,7 @@ int checkPCAction(PCB_p pcb) {
             return 1;
         } else if (CPU_PC == pcb->sync_array_unlockR1[i]) {
             return 2;
+        }
     }
     return 0;
 }
