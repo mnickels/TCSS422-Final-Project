@@ -222,7 +222,40 @@ char * pcb_simple_to_string(PCB_p pcb_ptr){
     }
 
     char *str = (char *) malloc(sizeof(char) * MAX_PCB_LEN);
-    sprintf(str, "PCB %d", pcb_ptr->pid);
+    char ptype[5];
+    switch(pcb_ptr->p_type){
+        case(IO):
+            sprintf(ptype, "IO");
+            break;
+        case(CI):
+            sprintf(ptype, "CI");
+            break;
+        case(PrCo):
+            switch(pcb_ptr->pair_type){
+                case(producer):
+                    sprintf(ptype, "Prod");
+                    break;
+                case(consumer):
+                    sprintf(ptype, "Cons");
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case(MR):
+            switch(pcb_ptr->pair_type){
+                case(A):
+                    sprintf(ptype, "MR_A");
+                    break;
+                case(B):
+                    sprintf(ptype, "MR_B");
+                    break;
+                default:
+                    break;
+            }
+            break;      
+    }
+    sprintf(str, "PCB 0x%X  Type: %s", pcb_ptr->pid, ptype);
     return str;
 }
 
