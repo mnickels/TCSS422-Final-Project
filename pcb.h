@@ -187,4 +187,8 @@ void init_io_1(PCB_p);
 
 void init_io_2(PCB_p);
 
+void init_sync_arrays(PCB_p);
+
+void init_dl_sync_arrays(PCB_p);
+
 #endif

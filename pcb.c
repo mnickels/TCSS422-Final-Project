@@ -136,7 +136,8 @@ int assignPCPair(PCB_p pcb_p, PCB_p pcb_c) {
     pcb_p->shared_resource = shared_resource;
     pcb_p->mutexR1 = mutex;
     pcb_c->mutexR1 = mutex;
-    init_sync_arrays(pcb_p, pcb_c);
+    init_sync_arrays(pcb_p);
+    init_sync_arrays(pcb_c);
     return NO_ERR;
 }
 
@@ -156,19 +157,31 @@ int assignMRPAir(PCB_p pcb_a, PCB_p pcb_b){
     pcb_b->mutexR1 = mutex1;
     pcb_b->mutexR2 = mutex2;
     if (!FORCE_DEADLOCK) {
-        init_sync_arrays(pcb_a, pcb_b);
+        init_sync_arrays(pcb_a);
+        init_sync_arrays(pcb_b);
     } else {
-        init_dl_sync_arrays(pcb_a, pcb_b);
+        init_sync_arrays(pcb_a);
+        init_dl_sync_arrays(pcb_b);
     }
     return NO_ERR;
 }
 
-void init_sync_arrays(PCB_p pcb_p, PCB_p pcb_c) {
-
+void init_sync_arrays(PCB_p pcb) {
+    for (int i = 0; i < 16; i++) {
+        pcb->sync_array_lockR1[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+        pcb->sync_array_lockR2[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+        pcb->sync_array_unlockR2[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+        pcb->sync_array_unlockR1[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+    }
 }
 
-void init_dl_sync_arrays(PCB_p pcb_p, PCB_p pcb_c) {
-
+void init_dl_sync_arrays(PCB_p pcb) {
+    for (int i = 0; i < 16; i++) {
+        pcb->sync_array_lockR2[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+        pcb->sync_array_lockR1[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+        pcb->sync_array_unlockR1[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+        pcb->sync_array_unlockR2[i / 4] = pcb->max_pc / 16 * i + (rand() % pcb->max_pc / 16);
+    }
 }
 
 char * pcb_to_string(PCB_p pcb_ptr) {
