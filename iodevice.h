@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <assert.h>
 #include <unistd.h>
+#include <time.h>
 
 /**
 * IO Device

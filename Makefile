@@ -7,14 +7,12 @@ CFLAGS := -c -std=c99 -Wall -pthread
 SRCS := $(wildcard *.c)
 OBJS := $(SRCS:.c=.o)
 
-
-
 .PHONY: default clean
 
 default: output
 
 output: $(OBJS)
-	$(CC) $(LFLAGS) -pthread $(OBJS) -o $@ 
+	$(CC) $(LFLAGS) -pthread $(OBJS) -o $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@ -I.

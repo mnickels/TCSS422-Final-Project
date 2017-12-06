@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <pthread.h>
 #include "ourmutex.h"
 #include "pcb.h"
 
@@ -31,7 +32,7 @@ void resetQueue();
 
 // int signalTimer();
 // int generatePCBs();
-void pseudo_ISR();
+void pseudo_ISR(interrupt_t);
 void scheduler();
 void dispatcher();
 void addPCB();

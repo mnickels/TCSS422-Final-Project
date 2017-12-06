@@ -11,6 +11,7 @@ unsigned int CPU_PC;
 unsigned int SYS_STACK;
 int PCB_COUNT;
 int interrupt_flag;
+pthread_mutex_t interrupt_mutex;
 int trap_flag;
 
 int main() {
@@ -24,6 +25,7 @@ int main() {
     CPU_PC = 0;
     PCB_COUNT = 0;
     interrupt_flag = -1;
+    pthread_mutex_init(&interrupt_mutex, NULL);
     trap_flag = -1;
     generateInitialPCBs();
 
@@ -62,7 +64,9 @@ int main() {
 
 // gets called by the timer and IO devices
 void psuedo_ISR(interrupt_t interrupt) {
+    pthread_mutex_lock(&interrupt_mutex);
     interrupt_flag = interrupt;
+    pthread_mutex_unlock(&interrupt_mutex);
 }
 
 void scheduler() {

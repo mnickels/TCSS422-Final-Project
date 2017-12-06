@@ -37,7 +37,7 @@ void timer_tick(TIMER_p timer) {
 	pthread_mutex_lock(&(timer->mutex));
 	if (timer->counter == 0) {
 		timer->counter--;
-		pseudo_ISR(0);
+		//pseudo_ISR(0);
 	} else if (timer->counter == -1) {
 		// timer is disabled; do nothing
 	} else {
