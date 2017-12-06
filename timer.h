@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define QUANTUM_SCALAR 50000000	// 50 ms
+#define QUANTUM_SCALAR 5000000	// 5 ms
 
 typedef struct timer {
 	pthread_t timer_thread;

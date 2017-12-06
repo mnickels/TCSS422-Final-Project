@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "timer.h"
+#include "os.h"
 
 TIMER_p timer_constructor() {
 	TIMER_p timer = calloc(1, sizeof(timer_s));
@@ -23,12 +24,12 @@ void timer_deconstructor(TIMER_p * timer) {
 }
 
 void * timer_run(void * timer) {
-	struct timespec * ts = calloc(1, sizeof(timespec));
-	ts->tv_sec = (time_t) 0;
-	ts->tv_nsec = QUANTUM_SCALAR;
+	struct timespec ts;
+	ts.tv_sec = 0;
+	ts.tv_nsec = QUANTUM_SCALAR;
 	for(;;) {
 		timer_tick((TIMER_p) timer);
-		nanosleep(ts, NULL);
+		nanosleep(&ts, NULL);
 	}
 }
 
@@ -36,7 +37,7 @@ void timer_tick(TIMER_p timer) {
 	pthread_mutex_lock(&(timer->mutex));
 	if (timer->counter == 0) {
 		timer->counter--;
-		// timer interrupt
+		pseudo_ISR(0);
 	} else if (timer->counter == -1) {
 		// timer is disabled; do nothing
 	} else {

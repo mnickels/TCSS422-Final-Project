@@ -1,5 +1,6 @@
 #include "iodevice.h"
 #include "timer.h"
+#include "os.h"
 
 DEVICE_p device_constructor(device_number_t io_id) {
 	
@@ -44,7 +45,7 @@ int device_enqueue(DEVICE_p device_ptr, PCB_p pcb_ptr) {
 }
 
 PCB_p device_dequeue(DEVICE_p device_ptr) {
-	if(!device_ptr) return PTR_ERR;
+	if(!device_ptr) return NULL;
 	pthread_mutex_lock(&(device_ptr->mutex));
 	//printf("Device num: %d DEQ LOCKED\n", device_ptr->io_id);
 	PCB_p temp = q_dequeue(device_ptr->wait_queue);
@@ -56,10 +57,13 @@ PCB_p device_dequeue(DEVICE_p device_ptr) {
 
 void *device_run(void * device_ptr) {
 	DEVICE_p d = (DEVICE_p) device_ptr;
+	struct timespec ts;
+	ts.tv_sec = 3;	// 3 seconds for a single IO interrupt to occur
+	ts.tv_nsec = 0;
 	for(;;) {
 
 		if (d->ready && d->wait_queue->length) {
-			sleep(QUANTUM_SCALAR * 1500);
+			nanosleep(&ts, NULL);
 			d->ready = 0; 
 			pseudo_ISR(d->io_id);
 		}

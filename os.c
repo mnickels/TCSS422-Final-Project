@@ -61,7 +61,7 @@ int main() {
 }
 
 // gets called by the timer and IO devices
-void psuedoISR(interrupt_t interrupt) {
+void psuedo_ISR(interrupt_t interrupt) {
     interrupt_flag = interrupt;
 }
 

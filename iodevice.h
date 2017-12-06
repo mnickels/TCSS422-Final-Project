@@ -5,7 +5,6 @@
 #define PTR_ERR -7
 
 #include "queue.h"
-#include "os.h"
 #include <pthread.h>
 #include <assert.h>
 #include <unistd.h>

@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "timer.h"
 #include "ourmutex.h"
 #include "pcb.h"
 
