@@ -1,5 +1,4 @@
 #include "ourmutex.h"
-
 int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
     if(!mutex->flag) {
         mutex->current_holder = requesting_process;
@@ -7,7 +6,7 @@ int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
         return 1;
     } else{
         //put into waiting queue
-        q_enqueue(mutex->waiting_queue, requesting_process);
+        q_enqueue(mutex->waitq, requesting_process);
         requesting_process->waiting_on_lock = 1;
         return 0;
     }
@@ -26,7 +25,7 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
     if (mutex->flag) {
         if (mutex->current_holder == requesting_process){
             mutex->flag = 0;
-            if (!q_isempty(mutex->waitq)) {
+            if (!q_is_empty(mutex->waitq)) {
                 PCB_p temp;
                 temp = q_dequeue(mutex->waitq);
                 temp->waiting_on_lock = 0;
@@ -40,14 +39,14 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
 }
 
 MUTEX_p mutex_constructor() {
-    MUTEX_p lock = calloc(1, sizeof(MUTEX_s));
+    MUTEX_p lock = calloc(1, sizeof(MUTEX_s) );
     lock->flag = 0;
     lock->current_holder = NULL;
     lock->waitq = q_constructor(0);
-    return MUTEX_p;
+    return lock;
 }
 
-int mutex_destructor( *MUTEX_p mutex ) {
+int mutex_destructor(MUTEX_p *mutex ) {
     q_destructor( &( ( *mutex)->waitq ) );
     free( *mutex);
     *mutex = NULL;

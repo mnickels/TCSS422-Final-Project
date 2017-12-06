@@ -73,7 +73,7 @@ typedef struct pcb {
 	enum process_type p_type;
 	enum pc_pair_type pair_type;
 	unsigned int * shared_resource;
-	MUTEX_p * mutex;
+	void * mutex;
 	unsigned int pair_id;
 	unsigned int waiting_on_lock:1;
 
@@ -83,7 +83,6 @@ typedef struct pcb {
 * Define a pointer to the PCB_s.
 */
 typedef PCB_s * PCB_p;
-
 
 /**********************************************
 *  CPU_context_s MEMBER FUNCTIONS PROTOTYPES  *
