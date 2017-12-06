@@ -30,7 +30,7 @@ void * timer_run(void * timer) {
 	for(;;) {
 		timer_tick((TIMER_p) timer);
 		nanosleep(&ts, NULL);
-		printf("Timer tick - %d\n", ((TIMER_p) timer)->counter);
+		//printf("Timer tick - %d\n", ((TIMER_p) timer)->counter);
 	}
 }
 

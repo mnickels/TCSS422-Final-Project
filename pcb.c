@@ -100,7 +100,7 @@ int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
     pcb_ptr->context = cpu_context_constructor();   // possibility that malloc returns NULL
     pcb_ptr->creation = clock();
     pcb_ptr->max_pc = rand() % 3000 + 2000;         // values between [2000, 4999]
-    pcb_ptr->termination = 0;
+    pcb_ptr->can_terminate = 1;
     pcb_ptr->terminate = rand() % 20 + 1;           // values between [1, 20]
     pcb_ptr->term_count = 0;
     pcb_ptr->p_type = ptype;
@@ -129,6 +129,8 @@ int assignPCPair(PCB_p pcb_p, PCB_p pcb_c) {
     if (check_pointer(pcb_p) == NO_OBJ_ERR || check_pointer(pcb_c) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_p->pair_type = producer;
     pcb_c->pair_type = consumer;
+    pcb_p->can_terminate = 0;
+    pcb_c->can_terminate = 0;
     pcb_p->pair_id = PAIR_ID;
     pcb_c->pair_id = PAIR_ID++;
     unsigned int * shared_resource = calloc(1, sizeof(int));
@@ -146,6 +148,8 @@ int assignMRPair(PCB_p pcb_a, PCB_p pcb_b){
     if (check_pointer(pcb_a) == NO_OBJ_ERR || check_pointer(pcb_a) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_a->pair_type = A;
     pcb_b->pair_type = B;
+    pcb_a->can_terminate = 0;
+    pcb_b->can_terminate = 0;
     pcb_a->pair_id = PAIR_ID;
     pcb_b->pair_id = PAIR_ID++;
     unsigned int * shared_resource = calloc(1, sizeof(int));

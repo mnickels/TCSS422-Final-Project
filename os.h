@@ -1,14 +1,14 @@
 #ifndef OS_H
 #define OS_H
 
-#include "p_queue.h"
-#include "timer.h"
-#include "iodevice.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include "p_queue.h"
+#include "timer.h"
+#include "iodevice.h"
 #include "ourmutex.h"
 #include "pcb.h"
 
@@ -29,9 +29,6 @@ int checkIOInterrupt();
 void checkTermination();
 void generatePCBs();
 void resetQueue();
-
-// int signalTimer();
-// int generatePCBs();
 void pseudo_ISR(interrupt_t);
 void scheduler();
 void dispatcher();
@@ -40,9 +37,6 @@ void createPCB(enum process_type);
 int checkIOTrap();
 int checkPCAction(PCB_p);
 int checkMRAction(PCB_p);
-// void pseudoIRET();
-// void terminate();
-
 
 #endif
 

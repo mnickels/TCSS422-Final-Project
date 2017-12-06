@@ -49,6 +49,7 @@ PCB_p device_dequeue(DEVICE_p device_ptr) {
 	pthread_mutex_lock(&(device_ptr->mutex));
 	//printf("Device num: %d DEQ LOCKED\n", device_ptr->io_id);
 	PCB_p temp = q_dequeue(device_ptr->wait_queue);
+	device_ptr->ready = 1;
 	//printf("In deque pcb_pid: %d\n ", temp->pid);
 	pthread_mutex_unlock(&(device_ptr->mutex));
 	//printf("Device num: %d DEQ UNLOCKED\n", device_ptr->io_id);
@@ -61,7 +62,6 @@ void *device_run(void * device_ptr) {
 	ts.tv_sec = 3;	// 3 seconds for a single IO interrupt to occur
 	ts.tv_nsec = 0;
 	for(;;) {
-
 		if (d->ready && d->wait_queue->length) {
 			nanosleep(&ts, NULL);
 			d->ready = 0; 
