@@ -65,7 +65,7 @@ void *device_run(void * device_ptr) {
 		if (d->ready && d->wait_queue->length) {
 			nanosleep(&ts, NULL);
 			d->ready = 0; 
-			//pseudo_ISR(d->io_id);
+			pseudo_ISR(d->io_id);
 		}
 		// printf("Device num: %d in the runner\n", d->io_id);
 		// sleep(1);

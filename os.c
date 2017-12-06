@@ -65,7 +65,7 @@ int main() {
 }
 
 // gets called by the timer and IO devices
-void psuedo_ISR(interrupt_t interrupt) {
+void pseudo_ISR(interrupt_t interrupt) {
     pthread_mutex_lock(&interrupt_mutex);
     switch (interrupt_flag) {
         case NO_INTERRUPT:
@@ -193,9 +193,9 @@ void runProcess() {
                     mutex_lock(currentprocess->mutexR1, currentprocess);
                     if (currentprocess->pair_type == producer) {
                         currentprocess->shared_resource++;
-                        printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        //printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                     } else{
-                        printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        //printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                     }
                     break;
                 case 2:
@@ -230,7 +230,7 @@ void runProcess() {
                     break;
                 case 3:
                     mutex_lock(currentprocess->mutexR2, currentprocess);
-                    printf("Both resources for MR pair %u are used\n", currentprocess->pair_id);
+                    //printf("Both resources for MR pair %u are used\n", currentprocess->pair_id);
                     break;
                 case 4:
                     mutex_unlock(currentprocess->mutexR2, currentprocess);
