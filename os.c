@@ -30,7 +30,7 @@ int main() {
     generateInitialPCBs();
 
     for(;;) {
-        printf("main loop @ PC=0x%04X\n", CPU_PC);
+        //printf("main loop @ PC=0x%04X\n", CPU_PC);
         
         if(!(CPU_PC % S) && CPU_PC != 0) {
             char* pqs = p_q_to_string(readyqueue);
@@ -217,11 +217,11 @@ void runProcess() {
                 case 1:
                     mutex_lock(currentprocess->mutexR1, currentprocess);
                     if (currentprocess->pair_type == producer) {
-                        //printf("CPU_PC = %d\n", CPU_PC);
+                        printf("CPU_PC = %d\n", CPU_PC);
                         (*currentprocess->shared_resource)++;
-                        //printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                     } else{
-                        //printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                     }
                     break;
                 case 2:
