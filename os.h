@@ -20,6 +20,7 @@
 #define S 50000
 
 typedef enum {NO_INTERRUPT = -1, TIMER_INTERRUPT = 0, IO1_INTERRUPT = 1, IO2_INTERRUPT = 2} interrupt_t;
+typedef enum {NO_TRAP = -1, IO1_TRAP = 1, IO2_TRAP = 2} trap_t;
 
 void scheduler();
 void dispatcher();
