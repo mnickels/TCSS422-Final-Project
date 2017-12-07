@@ -183,7 +183,11 @@ void dispatcher() {
         resetQueue();
         s_counter = S;
     }
+
     totalCycles++;
+    if (totalCycles % 100 == 0){
+        printf("\n\n***************%d total cycles***************\n\n", totalCycles);
+    }
 
     currentprocess = p_q_dequeue(readyqueue);
     temp = pcb_simple_to_string(currentprocess);
