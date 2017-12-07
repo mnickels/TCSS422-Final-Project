@@ -102,10 +102,10 @@ void scheduler() {
         case TIMER_INTERRUPT:
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
             // chance to add random PCB
-            if((rand() % 200) == 0) {
-                printf("Added a new pcb\n");
-                addPCB(); // context switch has a random chance to add a random process type
-            }
+            // if((rand() % 200) == 0) {
+            //     printf("Added a new pcb\n");
+            //     addPCB(); // context switch has a random chance to add a random process type
+            // }
             //check created queue and add them to readyqueue
             if (!q_is_empty(createdqueue)) {
                 while(!q_is_empty(createdqueue)) {
@@ -175,26 +175,27 @@ void dispatcher() {
 }
 
 void generateInitialPCBs() {
-    int mod = 0;
-    for(int i = 0; i < 8; i++){
-        mod = i % 4;
-        switch (mod) {
-            case(0):
-                createPCB(IO);
-                break;
-            case(1):
-                createPCB(CI);
-                break;
-            case(2):
-                createPCB(PrCo);
-                break;
-            case(3):
-                createPCB(MR);
-                break;
-            default:
-                break;
-        }
-    }
+    // int mod = 0;
+    // for(int i = 0; i < 8; i++){
+    //     mod = i % 4;
+    //     switch (mod) {
+    //         case(0):
+    //             createPCB(IO);
+    //             break;
+    //         case(1):
+    //             createPCB(CI);
+    //             break;
+    //         case(2):
+    //             createPCB(PrCo);
+    //             break;
+    //         case(3):
+    //             createPCB(MR);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
+    createPCB(MR);
     PCB_p process;
     if (!q_is_empty(createdqueue)) {
         while(!q_is_empty(createdqueue)) {
@@ -267,8 +268,16 @@ void runProcess() {
                 case 1:
                     if (((MUTEX_p)currentprocess->mutexR1)->current_holder == currentprocess) {
                         // printf("Mutex R1 lock was acquired after waiting\n");
+                        if (FORCE_DEADLOCK && currentprocess->pair_type == B) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
                     } else {
-                        mutex_lock(currentprocess->mutexR1, currentprocess);
+                        lock_result = mutex_lock(currentprocess->mutexR1, currentprocess);
+                        if (lock_result && (FORCE_DEADLOCK && currentprocess->pair_type == B)) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
                     }
                     break;
                 case 2:
@@ -277,11 +286,13 @@ void runProcess() {
                 case 3:
                     if(((MUTEX_p)currentprocess->mutexR2)->current_holder == currentprocess) {
                         // printf("Mutex R2 lock was acquired after waiting\n");
-                        (*currentprocess->shared_resource)++;
-                        printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        if (!FORCE_DEADLOCK || currentprocess->pair_type == A) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
                     } else {
                         lock_result = mutex_lock(currentprocess->mutexR2, currentprocess);
-                        if (lock_result) {
+                        if (lock_result && (!FORCE_DEADLOCK || currentprocess->pair_type == A)) {
                             (*currentprocess->shared_resource)++;
                             printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
