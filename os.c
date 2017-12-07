@@ -104,10 +104,10 @@ void scheduler() {
         case TIMER_INTERRUPT:
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
             // chance to add random PCB
-            if((rand() % 50) == 0) {
-                printf("Added a new pcb\n");
-                addPCB(); // context switch has a random chance to add a random process type
-            }
+            // if((rand() % 50) == 0) {
+            //     printf("Added a new pcb\n");
+            //     addPCB(); // context switch has a random chance to add a random process type
+            // }
             //check created queue and add them to readyqueue
             if (!q_is_empty(createdqueue)) {
                 while(!q_is_empty(createdqueue)) {
@@ -386,6 +386,7 @@ void checkTermination() {
         char * pcbs = pcb_to_string(currentprocess);
         printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
         printf("Process to be terminated: %s\n", pcbs);
+        PCB_COUNT--;
         free(pcbs);
         currentprocess->state = halted;
         q_enqueue(terminatedqueue, currentprocess);
@@ -475,6 +476,17 @@ void resetQueue() {
     // move all pcbs out of the readyqueue
     while (!p_q_is_empty(readyqueue)) {
         q_enqueue(temp, p_q_dequeue(readyqueue));
+    }
+    for (int i = 0; i < 10; i++) {
+        if (PCB_COUNT < MAX_PCB) {
+            addPCB();
+            PCB_COUNT++;
+        }
+    }
+    while (!q_is_empty(createdqueue)){
+        PCB_p temppcb = q_dequeue(createdqueue);
+        temppcb->state = ready;
+        p_q_enqueue(readyqueue, temppcb);
     }
     // set all pcbs' priorities to zero and re-add to readyqueue
     while (!q_is_empty(temp)) {
