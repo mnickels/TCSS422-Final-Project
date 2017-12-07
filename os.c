@@ -36,7 +36,7 @@ int main() {
     generateInitialPCBs();
     struct timespec ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = 10000;//QUANTUM_SCALAR;
+    ts.tv_nsec = 1000;//QUANTUM_SCALAR;
     s_counter = S;
     totalCycles = 0;
 
@@ -104,6 +104,14 @@ void scheduler() {
     switch(interrupt_flag){
         case TIMER_INTERRUPT:
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
+<<<<<<< HEAD
+=======
+            // chance to add random PCB
+            // if((rand() % 50) == 0) {
+            //     printf("Added a new pcb\n");
+            //     addPCB(); // context switch has a random chance to add a random process type
+            // }
+>>>>>>> 94d8b370eead41509fbf19602b72e05478289c67
             //check created queue and add them to readyqueue
             if (!q_is_empty(createdqueue)) {
                 while(!q_is_empty(createdqueue)) {
@@ -380,8 +388,14 @@ void checkTermination() {
     // check if the current process can be terminated, and its term_count == 0
     if (currentprocess->terminate && currentprocess->term_count >= currentprocess->terminate) {
         char * pcbs = pcb_to_string(currentprocess);
+<<<<<<< HEAD
         // printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
         printf("TERMINATING PROCESS %s\n", pcbs);
+=======
+        printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
+        printf("Process to be terminated: %s\n", pcbs);
+        PCB_COUNT--;
+>>>>>>> 94d8b370eead41509fbf19602b72e05478289c67
         free(pcbs);
         currentprocess->state = halted;
         q_enqueue(terminatedqueue, currentprocess);
@@ -472,6 +486,16 @@ void resetQueue() {
     // move all pcbs out of the readyqueue
     while (!p_q_is_empty(readyqueue)) {
         q_enqueue(temp, p_q_dequeue(readyqueue));
+    }
+    for (int i = 0; i < 10; i++) {
+        if (PCB_COUNT < MAX_PCB) {
+            addPCB();
+        }
+    }
+    while (!q_is_empty(createdqueue)){
+        PCB_p temppcb = q_dequeue(createdqueue);
+        temppcb->state = ready;
+        p_q_enqueue(readyqueue, temppcb);
     }
     // set all pcbs' priorities to zero and re-add to readyqueue
     while (!q_is_empty(temp)) {
