@@ -14,11 +14,7 @@ int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
         //put into waiting queue
         temp = pcb_simple_to_string(requesting_process);
         temp2 = pcb_simple_to_string(mutex->current_holder);
-<<<<<<< HEAD
         printf("LOCK by %s on mutex M%p - BLOCKED by %s\n", temp, mutex, temp2);
-=======
-        printf("%s requested lock on mutex M%p - blocked by %s\n", temp, mutex, temp2);
->>>>>>> 94d8b370eead41509fbf19602b72e05478289c67
         free(temp);
         free(temp2);
         q_enqueue(mutex->waitq, requesting_process);
