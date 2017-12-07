@@ -457,7 +457,7 @@ void createPCB(enum process_type ptype) {
 void resetQueue() {
     printf("S=%d iterations have passed - moving all processes to priority 0.\n", S);
     char * pq_string = p_q_to_string(readyqueue);
-    printf(pq_string);
+    printf("%s",pq_string);
     free(pq_string);
     QUEUE_p temp = q_constructor(0);
     // move all pcbs out of the readyqueue
@@ -473,7 +473,7 @@ void resetQueue() {
     }
     q_destructor(&temp);
     pq_string = p_q_to_string(readyqueue);
-    printf(pq_string);
+    printf("%s",pq_string);
     free(pq_string);
 }
 
