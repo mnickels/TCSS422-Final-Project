@@ -78,7 +78,7 @@ void pseudo_ISR(interrupt_t interrupt) {
     pthread_mutex_unlock(&interrupt_mutex);
     switch (interrupt) {
         case NO_INTERRUPT:
-            printf("pseudo-ISR called with no interrupt specified!!!\n");
+            //printf("pseudo-ISR called with no interrupt specified!!!\n");
             break;
         case TIMER_INTERRUPT:
             //printf("Timer interrupt occurred\n");
@@ -97,8 +97,8 @@ void scheduler() {
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
             // chance to add random PCB
             if((rand() % 50) == 0) {
-                //printf("Added a new pcb\n");
-                //addPCB(); // context switch has a random chance to add a random process type
+                printf("Added a new pcb\n");
+                addPCB(); // context switch has a random chance to add a random process type
             }
             //check created queue and add them to readyqueue
             if (!q_is_empty(createdqueue)) {
@@ -207,6 +207,7 @@ void generateInitialPCBs() {
         }
         char * qs = p_q_to_string(readyqueue);
         printf("Ready Queue after pcbs added:\n%s\n\n", qs);
+        free(qs);
     }
     scheduler();
 }
@@ -364,6 +365,7 @@ void checkTermination() {
         char * pcbs = pcb_to_string(currentprocess);
         printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
         printf("Process to be terminated: %s\n", pcbs);
+        free(pbcs);
         currentprocess->state = halted;
         q_enqueue(terminatedqueue, currentprocess);
         currentprocess = NULL;

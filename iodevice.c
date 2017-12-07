@@ -29,7 +29,7 @@ int device_deconstructor(DEVICE_p  *device_ptr) {
 	assert(rc == 0);	
 	q_destructor( &( ( *device_ptr )->wait_queue ) );
 
-	free( *device_ptr);
+	free(*device_ptr);
 	*device_ptr = NULL;
 	return SUCCESS; 
 } 
