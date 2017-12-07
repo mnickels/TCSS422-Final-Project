@@ -17,7 +17,7 @@
 #define PC_PAIR_PROCESS_LIMIT 20
 #define MRU_PROCESS_LIMIT 20
 #define MAX_PCB 115
-#define S 50000
+#define S 1380
 
 typedef enum {NO_INTERRUPT = -1, TIMER_INTERRUPT = 0, IO1_INTERRUPT = 1, IO2_INTERRUPT = 2} interrupt_t;
 typedef enum {NO_TRAP = -1, IO1_TRAP = 1, IO2_TRAP = 2} trap_t;
