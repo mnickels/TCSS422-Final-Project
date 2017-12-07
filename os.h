@@ -11,6 +11,7 @@
 #include "iodevice.h"
 #include "ourmutex.h"
 #include "pcb.h"
+#include "mutual_resource.h"
 
 #define IO_PROCESS_LIMIT 50
 #define CI_PROCESS_LIMIT 25
@@ -38,6 +39,8 @@ void createPCB(enum process_type);
 int checkIOTrap();
 int checkPCAction(PCB_p);
 int checkMRAction(PCB_p);
+
+void deadlock_monitor();
 
 #endif
 

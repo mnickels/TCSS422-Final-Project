@@ -1,5 +1,9 @@
 #include "os.h"
 
+
+MUT_p mut_res_arr[(MAX_PCB + 1)/2];
+unsigned int mut_res_idx = 0;
+unsigned int switch_count = 0;
 P_QUEUE_p readyqueue;
 QUEUE_p createdqueue;
 QUEUE_p terminatedqueue;
@@ -429,6 +433,8 @@ void createPCB(enum process_type ptype) {
             pcb = pcb_constructor(MR);
             pcb2 = pcb_constructor(MR);
             assignMRPair(pcb, pcb2);
+            MUT_p m_pair = mut_constructor(pcb, pcb2);
+            mut_res_arr[mut_res_idx++] = m_pair;
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
             PCB_COUNT += 2;
@@ -453,4 +459,11 @@ void resetQueue() {
         p_q_enqueue(readyqueue, temp_pcb);
     }
     q_destructor(&temp);
+}
+
+void deadlock_monitor() {
+    for(int i = 0; i  < mut_res_idx; i++) {
+        MUT_p temp = mut_res_arr[i];
+        if(temp->a->waiting_on_lock)
+    }
 }
