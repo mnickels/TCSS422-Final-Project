@@ -30,6 +30,7 @@ int p_q_is_empty(P_QUEUE_p this) {
 
 void p_q_enqueue(P_QUEUE_p this, PCB_p pcb) {
 	if (this && pcb) {
+		pcb->priority = pcb->priority % NUM_PRIORITIES;
 		q_enqueue(this->queues[pcb->priority], pcb);
 	}
 }

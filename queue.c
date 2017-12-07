@@ -26,19 +26,21 @@ int q_is_empty(QUEUE_p this) {
 }
 
 void q_enqueue(QUEUE_p this, PCB_p pcb) {
-	q_node * node;
-	node = calloc(1, sizeof(q_node));
-	if (node) {
-		node->next = NULL;
-		node->pcb = pcb;
+	if (this && pcb) {
+		q_node * node;
+		node = calloc(1, sizeof(q_node));
+		if (node) {
+			node->next = NULL;
+			node->pcb = pcb;
+		}
+		if (!this->head) {
+			this->head = node;
+		} else {
+			this->tail->next = node;
+		}
+		this->tail = node;
+		this->length++;
 	}
-	if (!this->head) {
-		this->head = node;
-	} else {
-		this->tail->next = node;
-	}
-	this->tail = node;
-	this->length++;
 }
 
 PCB_p q_dequeue(QUEUE_p this) {

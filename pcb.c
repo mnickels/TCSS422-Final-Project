@@ -177,12 +177,6 @@ void init_sync_arrays(PCB_p pcb) {
         pcb->sync_array_unlockR2[i / 4] = pcb->max_pc / 16 * (i + 2) + (rand() % pcb->max_pc / 16);
         pcb->sync_array_unlockR1[i / 4] = pcb->max_pc / 16 * (i + 3) + (rand() % pcb->max_pc / 16);
     }
-    // for (int i = 0; i < 4; i++) {
-    //     pcb->sync_array_lockR1[i] = 100 + i * 250;
-    //     pcb->sync_array_lockR2[i] = 110 + i * 250;
-    //     pcb->sync_array_unlockR2[i] = 120 + i * 250;
-    //     pcb->sync_array_unlockR1[i] = 130 + i * 250;
-    // }
 }
 
 void init_dl_sync_arrays(PCB_p pcb) {

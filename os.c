@@ -267,8 +267,16 @@ void runProcess() {
                 case 1:
                     if (((MUTEX_p)currentprocess->mutexR1)->current_holder == currentprocess) {
                         // printf("Mutex R1 lock was acquired after waiting\n");
+                        if (FORCE_DEADLOCK && currentprocess->pair_type == B) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
                     } else {
-                        mutex_lock(currentprocess->mutexR1, currentprocess);
+                        lock_result = mutex_lock(currentprocess->mutexR1, currentprocess);
+                        if (lock_result && (FORCE_DEADLOCK && currentprocess->pair_type == B)) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
                     }
                     break;
                 case 2:
@@ -277,11 +285,13 @@ void runProcess() {
                 case 3:
                     if(((MUTEX_p)currentprocess->mutexR2)->current_holder == currentprocess) {
                         // printf("Mutex R2 lock was acquired after waiting\n");
-                        (*currentprocess->shared_resource)++;
-                        //printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        if (!FORCE_DEADLOCK || currentprocess->pair_type == A) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
                     } else {
                         lock_result = mutex_lock(currentprocess->mutexR2, currentprocess);
-                        if (lock_result) {
+                        if (lock_result && (!FORCE_DEADLOCK || currentprocess->pair_type == A)) {
                             (*currentprocess->shared_resource)++;
                             //printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
