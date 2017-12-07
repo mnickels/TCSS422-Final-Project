@@ -480,7 +480,6 @@ void resetQueue() {
     for (int i = 0; i < 10; i++) {
         if (PCB_COUNT < MAX_PCB) {
             addPCB();
-            PCB_COUNT++;
         }
     }
     while (!q_is_empty(createdqueue)){
