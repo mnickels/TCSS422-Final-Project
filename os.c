@@ -265,14 +265,27 @@ void runProcess() {
                 case 0:
                     break;
                 case 1:
-                    mutex_lock(currentprocess->mutexR1, currentprocess);
+                    if (((MUTEX_p)currentprocess->mutexR1)->current_holder == currentprocess) {
+                        // printf("Mutex R1 lock was acquired after waiting\n");
+                    } else {
+                        mutex_lock(currentprocess->mutexR1, currentprocess);
+                    }
                     break;
                 case 2:
                     mutex_unlock(currentprocess->mutexR1, currentprocess);
                     break;
                 case 3:
-                    mutex_lock(currentprocess->mutexR2, currentprocess);
-                    //printf("Both resources for MR pair %u are used\n", currentprocess->pair_id);
+                    if(((MUTEX_p)currentprocess->mutexR2)->current_holder == currentprocess) {
+                        // printf("Mutex R2 lock was acquired after waiting\n");
+                        (*currentprocess->shared_resource)++;
+                        printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                    } else {
+                        lock_result = mutex_lock(currentprocess->mutexR2, currentprocess);
+                        if (lock_result) {
+                            (*currentprocess->shared_resource)++;
+                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
+                    }
                     break;
                 case 4:
                     mutex_unlock(currentprocess->mutexR2, currentprocess);
