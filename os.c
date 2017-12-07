@@ -96,7 +96,7 @@ void scheduler() {
         case TIMER_INTERRUPT:
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
             // chance to add random PCB
-            if((rand() % 50) == 0) {
+            if((rand() % 200) == 0) {
                 printf("Added a new pcb\n");
                 addPCB(); // context switch has a random chance to add a random process type
             }
@@ -207,12 +207,13 @@ void runProcess() {
     //check process type and take appropriate action
     int action = 0;
     struct timespec ts;
+    int lock_result;
+    char * temp;
 	ts.tv_sec = 0;
 	ts.tv_nsec = QUANTUM_SCALAR;
     nanosleep(&ts, NULL);
     switch (currentprocess->p_type) {
         case(IO):
-            
             trap_flag = checkIOTrap();
             break;
         case(CI):
@@ -223,17 +224,34 @@ void runProcess() {
                 case 0:
                     break;
                 case 1:
-                    mutex_lock(currentprocess->mutexR1, currentprocess);
-                    if (currentprocess->pair_type == producer) {
-                        //printf("CPU_PC = %d\n", CPU_PC);
-                        (*currentprocess->shared_resource)++;
-                        printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
-                    } else{
-                        printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                    if(((MUTEX_p)currentprocess->mutexR1)->current_holder == currentprocess) {
+                        printf("Mutex lock acquired after waiting\n");
+                        if(currentprocess->pair_type == producer){
+                            (*currentprocess->shared_resource)++;
+                            printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        } else {
+                            printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                        }
+                    } else {
+                        lock_result = mutex_lock(currentprocess->mutexR1, currentprocess);
+                        if (lock_result) {
+                            if(currentprocess->pair_type == producer){
+                                (*currentprocess->shared_resource)++;
+                                printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            } else {
+                                printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            }
+                        }
                     }
+                    
                     break;
                 case 2:
-                    mutex_unlock(currentprocess->mutexR1, currentprocess);
+                    lock_result = mutex_unlock(currentprocess->mutexR1, currentprocess);
+                    if (!lock_result) {
+                        temp = pcb_simple_to_string(currentprocess);
+                        printf("ERROR!!! %s tried to unlock its mutex but was already unlocked\n", temp);
+                        free(temp);
+                    }
                     break;
                 default:
                     break;
