@@ -5,7 +5,7 @@ int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
     if(!mutex->flag) {
         mutex->current_holder = requesting_process;
         temp = pcb_simple_to_string(requesting_process);
-        //printf("%s requested lock on mutex M%p - succeeded\n", temp, mutex);
+        printf("%s requested lock on mutex M%p - succeeded\n", temp, mutex);
         free(temp);
         requesting_process->waiting_on_lock = 0;
         mutex->flag = 1;
@@ -14,7 +14,7 @@ int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
         //put into waiting queue
         temp = pcb_simple_to_string(requesting_process);
         temp2 = pcb_simple_to_string(mutex->current_holder);
-        //printf("%s requested lock on mutex M%p - blocked by %s\n", temp, mutex, temp);
+        printf("%s requested lock on mutex M%p - blocked by %s\n", temp, mutex, temp);
         free(temp);
         free(temp2);
         q_enqueue(mutex->waitq, requesting_process);
@@ -39,7 +39,7 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
         if (mutex->current_holder == requesting_process){
             mutex->flag = 0;
             temp1 = pcb_simple_to_string(mutex->current_holder);
-            //printf("%s requested unlock on mutex M%p - succeeded\n", temp1, mutex);
+            printf("%s requested unlock on mutex M%p - succeeded\n", temp1, mutex);
             free(temp1);
             mutex->current_holder = NULL;
             if (!q_is_empty(mutex->waitq)) {
@@ -54,7 +54,7 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
         } else {
             temp1 = pcb_simple_to_string(requesting_process);
             temp2 = pcb_simple_to_string(mutex->current_holder);
-            //printf("%s requested unlock on mutex M%p - not the current holder, which is %s\n", temp1, mutex, temp2);
+            printf("%s requested unlock on mutex M%p - not the current holder, which is %s\n", temp1, mutex, temp2);
             free(temp1);
             free(temp2);
         }
