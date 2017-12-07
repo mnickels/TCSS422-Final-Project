@@ -18,9 +18,10 @@ interrupt_t interrupt_flag;
 pthread_mutex_t interrupt_mutex;
 trap_t trap_flag;
 unsigned int s_counter;
+unsigned int totalCycles;
 
 int main() {
-    srand(0);
+    srand(time(NULL));
     readyqueue = p_q_constructor();
     createdqueue = q_constructor(0);
     terminatedqueue = q_constructor(0);
@@ -37,6 +38,7 @@ int main() {
     ts.tv_sec = 0;
     ts.tv_nsec = QUANTUM_SCALAR;
     s_counter = S;
+    totalCycles = 0;
 
     for(;;) {
         nanosleep(&ts, NULL);
@@ -60,6 +62,8 @@ int main() {
         if (interrupt_flag != NO_INTERRUPT) scheduler();
         else if (trap_flag != NO_TRAP) scheduler();
         pthread_mutex_unlock(&interrupt_mutex);
+
+        if (totalCycles >= 100000) break;
     }
 }
 
@@ -179,6 +183,7 @@ void dispatcher() {
         resetQueue();
         s_counter = S;
     }
+    totalCycles++;
 
     currentprocess = p_q_dequeue(readyqueue);
     temp = pcb_simple_to_string(currentprocess);
