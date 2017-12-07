@@ -29,6 +29,7 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
         if (mutex->current_holder == requesting_process){
             mutex->flag = 0;
             printf("%s requested unlock on mutex M%p - succeeded\n", pcb_simple_to_string(mutex->current_holder), mutex);
+            mutex->current_holder = NULL;
             if (!q_is_empty(mutex->waitq)) {
                 PCB_p temp;
                 temp = q_dequeue(mutex->waitq);
