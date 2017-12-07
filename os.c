@@ -90,7 +90,7 @@ void pseudo_ISR(interrupt_t interrupt) {
             //printf("Timer interrupt occurred\n");
             break;
         default:
-            printf("IO interrupt occurred on IO device %d\n", interrupt);
+            //printf("IO interrupt occurred on IO device %d\n", interrupt);
             break;
     }
 }
@@ -103,8 +103,8 @@ void scheduler() {
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
             // chance to add random PCB
             if((rand() % 50) == 0) {
-                printf("Added a new pcb\n");
-                addPCB(); // context switch has a random chance to add a random process type
+                //printf("Added a new pcb\n");
+                //addPCB(); // context switch has a random chance to add a random process type
             }
             //check created queue and add them to readyqueue
             if (!q_is_empty(createdqueue)) {

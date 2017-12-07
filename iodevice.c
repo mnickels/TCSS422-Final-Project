@@ -59,7 +59,7 @@ PCB_p device_dequeue(DEVICE_p device_ptr) {
 void *device_run(void * device_ptr) {
 	DEVICE_p d = (DEVICE_p) device_ptr;
 	struct timespec ts;
-	ts.tv_sec = 3;	// 3 seconds for a single IO interrupt to occur
+	ts.tv_sec = 1;	// 3 seconds for a single IO interrupt to occur
 	ts.tv_nsec = 0;
 	for(;;) {
 		if (d->ready && d->wait_queue->length) {

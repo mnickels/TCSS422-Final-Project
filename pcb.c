@@ -100,7 +100,7 @@ int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
     pcb_ptr->context = cpu_context_constructor();   // possibility that malloc returns NULL
     pcb_ptr->creation = clock();
     pcb_ptr->max_pc = rand() % 3000 + 2000;         // values between [2000, 4999]
-    pcb_ptr->terminate = rand() % 20 + 1;           // values between [1, 20]
+    pcb_ptr->terminate = rand() % 10 + 1;           // values between [1, 20]
     pcb_ptr->term_count = 0;
     pcb_ptr->p_type = ptype;
     pcb_ptr->waiting_on_lock = 0;
