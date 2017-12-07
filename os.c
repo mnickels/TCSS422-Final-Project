@@ -16,7 +16,7 @@ trap_t trap_flag;
 unsigned int s_counter;
 
 int main() {
-    srand(0);
+    srand(time(NULL));
     readyqueue = p_q_constructor();
     createdqueue = q_constructor(0);
     terminatedqueue = q_constructor(0);
