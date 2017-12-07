@@ -486,14 +486,16 @@ void resetQueue() {
 }
 
 void deadlock_monitor() {
+    int flag = 0; 
     for(int i = 0; i  < mut_res_idx; i++) {
         MUT_p temp = mut_res_arr[i];
         PCB_p temp_a = temp->a;
         PCB_p temp_b = temp->b;
         if( ((MUTEX_p)temp_a->mutexR1)->current_holder == temp_a && ((MUTEX_p)temp_b->mutexR2)->current_holder == temp_b) {
-            printf("DEADLOCK Occurred with process %X and process %X\n", temp_a->pid, temp_b->pid);
-        } else {
-            printf("NO DEADLOCK Occurred\n");
+            flag =1;
+            
         }
     }
+    if (flag) printf("DEADLOCK Occurred with process %X and process %X\n", temp_a->pid, temp_b->pid);
+    else      printf("NO DEADLOCK Occurred\n");
 }
