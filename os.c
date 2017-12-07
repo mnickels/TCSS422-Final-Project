@@ -119,6 +119,7 @@ void scheduler() {
                 //printf("Ready Queue after pcbs added:\n%s\n\n", qs);
                 free(qs);
             }
+
             // context switch
             dispatcher();
             break;
@@ -150,6 +151,13 @@ void scheduler() {
 }
 
 void dispatcher() {
+    
+    //check for deadlock every 10 context switch
+    switch_count++;
+    if(switch_count == 10) {
+        switch_count = 0;
+        deadlock_monitor();
+    }
     char * temp;
     if (currentprocess) {
         temp = pcb_simple_to_string(currentprocess);
@@ -374,7 +382,7 @@ void checkTermination() {
         char * pcbs = pcb_to_string(currentprocess);
         printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
         printf("Process to be terminated: %s\n", pcbs);
-        free(pbcs);
+        free(pcbs);
         currentprocess->state = halted;
         q_enqueue(terminatedqueue, currentprocess);
         currentprocess = NULL;
@@ -480,6 +488,12 @@ void resetQueue() {
 void deadlock_monitor() {
     for(int i = 0; i  < mut_res_idx; i++) {
         MUT_p temp = mut_res_arr[i];
-        if(temp->a->waiting_on_lock)
+        PCB_p temp_a = temp->a;
+        PCB_p temp_b = temp->b;
+        if( ((MUTEX_p)temp_a->mutexR1)->current_holder == temp_a && ((MUTEX_p)temp_b->mutexR2)->current_holder == temp_b) {
+            printf("DEADLOCK Occurred with process %X and process %X\n", temp_a->pid, temp_b->pid);
+        } else {
+            printf("NO DEADLOCK Occurred\n");
+        }
     }
 }
