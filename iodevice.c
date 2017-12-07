@@ -63,6 +63,7 @@ void *device_run(void * device_ptr) {
 	ts.tv_nsec = 0;
 	for(;;) {
 		if (d->ready && d->wait_queue->length) {
+			ts.tv_sec = (rand() % 2) + 1;	// random value between 1 and 3 seconds, inclusive
 			nanosleep(&ts, NULL);
 			d->ready = 0; 
 			pseudo_ISR(d->io_id);
