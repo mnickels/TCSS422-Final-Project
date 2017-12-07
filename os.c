@@ -41,7 +41,7 @@ int main() {
     totalCycles = 0;
 
     for(;;) {
-        nanosleep(&ts, NULL);
+        // nanosleep(&ts, NULL);
         // printf("main loop @ PC=0x%04X\n", CPU_PC);
 
         if (!currentprocess->waiting_on_lock) {
@@ -63,8 +63,9 @@ int main() {
         else if (trap_flag != NO_TRAP) scheduler();
         pthread_mutex_unlock(&interrupt_mutex);
 
-        if (totalCycles >= 100000) break;
+        if (totalCycles >= 1000) break;
     }
+    printf("100000 cycles executed, stopping simulation.\n");
 }
 
 // gets called by the timer and IO devices
@@ -103,11 +104,6 @@ void scheduler() {
     switch(interrupt_flag){
         case TIMER_INTERRUPT:
         case NO_INTERRUPT:      // NO_INTERRUPT means this is the first run of the program
-            // chance to add random PCB
-            if((rand() % 50) == 0) {
-                printf("Added a new pcb\n");
-                addPCB(); // context switch has a random chance to add a random process type
-            }
             //check created queue and add them to readyqueue
             if (!q_is_empty(createdqueue)) {
                 while(!q_is_empty(createdqueue)) {
@@ -161,7 +157,7 @@ void dispatcher() {
     char * temp;
     if (currentprocess) {
         temp = pcb_simple_to_string(currentprocess);
-        printf("Current process %s ", temp);
+        // printf("Current process %s ", temp);
         free(temp);
         currentprocess->context->pc = SYS_STACK;
         if (trap_flag == IO1_TRAP) {
@@ -185,13 +181,13 @@ void dispatcher() {
     }
 
     totalCycles++;
-    if (totalCycles % 100 == 0){
-        printf("\n\n***************%d total cycles***************\n\n", totalCycles);
-    }
+    // if (totalCycles % 100 == 0){
+    //     printf("\n\n***************%d total cycles***************\n\n", totalCycles);
+    // }
 
     currentprocess = p_q_dequeue(readyqueue);
     temp = pcb_simple_to_string(currentprocess);
-    printf("context switch to %s\n", temp);
+    // printf("context switch to %s\n", temp);
     free(temp);
     currentprocess->state = running;
     SYS_STACK = currentprocess->context->pc;
@@ -222,12 +218,12 @@ void generateInitialPCBs() {
     if (!q_is_empty(createdqueue)) {
         while(!q_is_empty(createdqueue)) {
             process = q_dequeue(createdqueue);
-            printf("%s\n", pcb_to_string(process));
+            // printf("%s\n", pcb_to_string(process));
             process->state = ready;
             p_q_enqueue(readyqueue, process);
         }
         char * qs = p_q_to_string(readyqueue);
-        printf("Ready Queue after pcbs added:\n%s\n\n", qs);
+        // printf("Ready Queue after pcbs added:\n%s\n\n", qs);
         free(qs);
     }
     scheduler();
@@ -254,18 +250,18 @@ void runProcess() {
                         //printf("Mutex lock acquired after waiting\n");
                         if(currentprocess->pair_type == producer){
                             (*currentprocess->shared_resource)++;
-                            printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            printf("Producer PCB 0x%X incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         } else {
-                            printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            printf("Consumer PCB 0x%X read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
                     } else {
                         lock_result = mutex_lock(currentprocess->mutexR1, currentprocess);
                         if (lock_result) {
                             if(currentprocess->pair_type == producer){
                                 (*currentprocess->shared_resource)++;
-                                printf("Producer %u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                                printf("Producer PCB 0x%X incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                             } else {
-                                printf("Consumer %u read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                                printf("Consumer PCB 0x%X read variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                             }
                         }
                     }
@@ -275,7 +271,7 @@ void runProcess() {
                     lock_result = mutex_unlock(currentprocess->mutexR1, currentprocess);
                     if (!lock_result) {
                         temp = pcb_simple_to_string(currentprocess);
-                        printf("ERROR!!! %s tried to unlock its mutex but was already unlocked\n", temp);
+                        // printf("ERROR!!! %s tried to unlock its mutex but was already unlocked\n", temp);
                         free(temp);
                     }
                     break;
@@ -293,13 +289,13 @@ void runProcess() {
                         // printf("Mutex R1 lock was acquired after waiting\n");
                         if (FORCE_DEADLOCK && currentprocess->pair_type == B) {
                             (*currentprocess->shared_resource)++;
-                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            printf("Mutual Resource PCB 0x%X incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
                     } else {
                         lock_result = mutex_lock(currentprocess->mutexR1, currentprocess);
                         if (lock_result && (FORCE_DEADLOCK && currentprocess->pair_type == B)) {
                             (*currentprocess->shared_resource)++;
-                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            printf("Mutual Resource PCB 0x%X incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
                     }
                     break;
@@ -311,13 +307,13 @@ void runProcess() {
                         // printf("Mutex R2 lock was acquired after waiting\n");
                         if (!FORCE_DEADLOCK || currentprocess->pair_type == A) {
                             (*currentprocess->shared_resource)++;
-                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            printf("Mutual Resource PCB 0x%X incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
                     } else {
                         lock_result = mutex_lock(currentprocess->mutexR2, currentprocess);
                         if (lock_result && (!FORCE_DEADLOCK || currentprocess->pair_type == A)) {
                             (*currentprocess->shared_resource)++;
-                            printf("Mutual Resource P%u incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
+                            printf("Mutual Resource PCB 0x%X incremented variable %u: %u\n", currentprocess->pid, currentprocess->pair_id, *currentprocess->shared_resource);
                         }
                     }
                     break;
@@ -367,12 +363,12 @@ int checkIOTrap() {
     for(int i = 0; i < 4; i++){
         if(CPU_PC == currentprocess->io_1_traps[i]){
             temp = pcb_simple_to_string(currentprocess);
-            printf("%s -- Trap request for device 1 at PC = %d.\n\n", temp, CPU_PC);
+            printf("IO TRAP request for device 1 by %s\n", temp);
             free(temp);
             return 1;
         } else if (CPU_PC == currentprocess->io_2_traps[i]){
             temp = pcb_simple_to_string(currentprocess);
-            printf("%s -- Trap request for device 2 at PC = %d.\n\n", temp, CPU_PC);
+            printf("IO TRAP request for device 2 by %s\n", temp);
             free(temp);
             return 2;
         }
@@ -384,8 +380,8 @@ void checkTermination() {
     // check if the current process can be terminated, and its term_count == 0
     if (currentprocess->terminate && currentprocess->term_count >= currentprocess->terminate) {
         char * pcbs = pcb_to_string(currentprocess);
-        printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
-        printf("Process to be terminated: %s\n", pcbs);
+        // printf("term count: %d and max terms: %d  and max_pc: %d\n", currentprocess->term_count, currentprocess->terminate, currentprocess->max_pc);
+        printf("TERMINATING PROCESS %s\n", pcbs);
         free(pcbs);
         currentprocess->state = halted;
         q_enqueue(terminatedqueue, currentprocess);
@@ -467,7 +463,8 @@ void createPCB(enum process_type ptype) {
 }
 
 void resetQueue() {
-    printf("S=%d iterations have passed - moving all processes to priority 0.\n", S);
+    // printf("S=%d iterations have passed - moving all processes to priority 0.\n", S);
+    printf("RESET QUEUE after S=%d number of context switches\n", S);
     char * pq_string = p_q_to_string(readyqueue);
     printf("%s",pq_string);
     free(pq_string);
