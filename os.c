@@ -28,9 +28,13 @@ int main() {
     pthread_mutex_init(&interrupt_mutex, NULL);
     trap_flag = -1;
     generateInitialPCBs();
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = QUANTUM_SCALAR;
 
     for(;;) {
-        //printf("main loop @ PC=0x%04X\n", CPU_PC);
+        nanosleep(&ts, NULL);
+        // printf("main loop @ PC=0x%04X\n", CPU_PC);
         
         if(!(CPU_PC % S) && CPU_PC != 0) {
             char* pqs = p_q_to_string(readyqueue);
@@ -42,6 +46,9 @@ int main() {
 
         if (!currentprocess->waiting_on_lock) {
             runProcess();
+        }
+
+        if (!currentprocess->waiting_on_lock) {
             if (CPU_PC >= currentprocess->max_pc) {
                 currentprocess->term_count++;
                 CPU_PC = 0;
@@ -50,7 +57,6 @@ int main() {
                 CPU_PC++;
             }
         }
-
         
         pthread_mutex_lock(&interrupt_mutex);
         if (interrupt_flag != NO_INTERRUPT) scheduler();
@@ -145,7 +151,7 @@ void dispatcher() {
     char * temp;
     if (currentprocess) {
         temp = pcb_simple_to_string(currentprocess);
-        //printf("Current process %s ", temp);
+        printf("Current process %s ", temp);
         free(temp);
         currentprocess->context->pc = SYS_STACK;
         if (trap_flag == IO1_TRAP) {
@@ -162,7 +168,7 @@ void dispatcher() {
     }
     currentprocess = p_q_dequeue(readyqueue);
     temp = pcb_simple_to_string(currentprocess);
-    //printf("context switch to %s\n", temp);
+    printf("context switch to %s\n", temp);
     free(temp);
     currentprocess->state = running;
     SYS_STACK = currentprocess->context->pc;
@@ -206,12 +212,8 @@ void generateInitialPCBs() {
 void runProcess() {
     //check process type and take appropriate action
     int action = 0;
-    struct timespec ts;
     int lock_result;
     char * temp;
-	ts.tv_sec = 0;
-	ts.tv_nsec = QUANTUM_SCALAR;
-    nanosleep(&ts, NULL);
     switch (currentprocess->p_type) {
         case(IO):
             trap_flag = checkIOTrap();

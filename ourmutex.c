@@ -34,8 +34,8 @@ int mutex_unlock(MUTEX_p mutex, PCB_p requesting_process) {
                 temp = q_dequeue(mutex->waitq);
                 printf("Waiting process %s, commence lock attempt on mutex M%p\n", pcb_simple_to_string(temp), mutex);
                 mutex_lock(mutex, temp);
-                return 1;
             }
+            return 1;
         } else {
             printf("%s requested unlock on mutex M%p - not the current holder, which is %s\n", pcb_simple_to_string(requesting_process), mutex, pcb_simple_to_string(mutex->current_holder));
         }
