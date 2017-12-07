@@ -36,7 +36,7 @@ int main() {
     generateInitialPCBs();
     struct timespec ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = 10000;//QUANTUM_SCALAR;
+    ts.tv_nsec = 1000;//QUANTUM_SCALAR;
     s_counter = S;
     totalCycles = 0;
 
