@@ -19,6 +19,10 @@ pthread_mutex_t interrupt_mutex;
 trap_t trap_flag;
 unsigned int s_counter;
 unsigned int totalCycles;
+unsigned int CI_pcbs_created;
+unsigned int IO_pcbs_created;
+unsigned int PC_pcbs_created;
+unsigned int MR_pcbs_created;
 
 int main() {
     srand(time(NULL));
@@ -33,10 +37,14 @@ int main() {
     interrupt_flag = -1;
     pthread_mutex_init(&interrupt_mutex, NULL);
     trap_flag = -1;
+    CI_pcbs_created = 0;
+    IO_pcbs_created = 0;
+    PC_pcbs_created = 0;
+    MR_pcbs_created = 0;
     generateInitialPCBs();
-    struct timespec ts;
-    ts.tv_sec = 0;
-    ts.tv_nsec = 1000;//QUANTUM_SCALAR;
+    // struct timespec ts;
+    // ts.tv_sec = 0;
+    // ts.tv_nsec = 1000;//QUANTUM_SCALAR;
     s_counter = S;
     totalCycles = 0;
 
@@ -63,9 +71,18 @@ int main() {
         else if (trap_flag != NO_TRAP) scheduler();
         pthread_mutex_unlock(&interrupt_mutex);
 
-        if (totalCycles >= 1000) break;
+        if (totalCycles >= 250) break;
     }
-    printf("100000 cycles executed, stopping simulation.\n");
+    printf("250 cycles executed, stopping simulation.\n");
+    printf("PCBs created by type:\n");
+    printf("\tCI: %d\n", CI_pcbs_created);
+    printf("\tIO: %d\n", IO_pcbs_created);
+    printf("\tPC: %d\n", PC_pcbs_created);
+    printf("\tMR: %d\n", MR_pcbs_created);
+    printf("\ttotal: %d\n", CI_pcbs_created + IO_pcbs_created + PC_pcbs_created + MR_pcbs_created);
+    char * qs = p_q_to_string(readyqueue);
+    printf("Ready Queue at the end:\n%s\n\n", qs);
+    free(qs);
 }
 
 // gets called by the timer and IO devices
@@ -93,7 +110,7 @@ void pseudo_ISR(interrupt_t interrupt) {
             //printf("Timer interrupt occurred\n");
             break;
         default:
-            //printf("IO interrupt occurred on IO device %d\n", interrupt);
+            // printf("IO INTERRUPT occurred on IO device %d\n", interrupt);
             break;
     }
 }
@@ -398,6 +415,7 @@ void checkTermination() {
             pcb_deconstructor(&temp);
         }
     }
+    PCB_COUNT--;
 }
 
 void addPCB() {
@@ -432,11 +450,13 @@ void createPCB(enum process_type ptype) {
             pcb = pcb_constructor(IO);
             q_enqueue(createdqueue, pcb);
             PCB_COUNT++;
+            IO_pcbs_created++;
             break;
         case(CI):
             pcb = pcb_constructor(CI);
             q_enqueue(createdqueue, pcb);
             PCB_COUNT++;
+            CI_pcbs_created++;
             break;
         case(PrCo):
             pcb = pcb_constructor(PrCo);
@@ -445,6 +465,7 @@ void createPCB(enum process_type ptype) {
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
             PCB_COUNT += 2;
+            PC_pcbs_created += 2;
             break;
         case(MR):
             pcb = pcb_constructor(MR);
@@ -455,6 +476,7 @@ void createPCB(enum process_type ptype) {
             q_enqueue(createdqueue, pcb);
             q_enqueue(createdqueue, pcb2);
             PCB_COUNT += 2;
+            MR_pcbs_created += 2;
             break;
         default:
             break;
@@ -466,7 +488,7 @@ void resetQueue() {
     // printf("S=%d iterations have passed - moving all processes to priority 0.\n", S);
     printf("RESET QUEUE after S=%d number of context switches\n", S);
     char * pq_string = p_q_to_string(readyqueue);
-    printf("%s",pq_string);
+    // printf("%s",pq_string);
     free(pq_string);
     QUEUE_p temp = q_constructor(0);
     // move all pcbs out of the readyqueue

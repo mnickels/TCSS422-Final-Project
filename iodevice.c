@@ -60,10 +60,10 @@ void *device_run(void * device_ptr) {
 	DEVICE_p d = (DEVICE_p) device_ptr;
 	struct timespec ts;
 	ts.tv_sec = 0;	// 3 seconds for a single IO interrupt to occur
-	ts.tv_nsec = QUANTUM_SCALAR / 10000;
 	for(;;) {
 		if (d->ready && d->wait_queue->length) {
 			// ts.tv_sec = (rand() % 2) + 1;	// random value between 1 and 3 seconds, inclusive
+			ts.tv_nsec = QUANTUM_SCALAR + rand() % 1000;
 			nanosleep(&ts, NULL);
 			d->ready = 0; 
 			pseudo_ISR(d->io_id);
