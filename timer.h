@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define QUANTUM_SCALAR 50	// .0005 ms
+#define QUANTUM_SCALAR 5	// .00005 ms
 
 typedef struct timer {
 	pthread_t timer_thread;

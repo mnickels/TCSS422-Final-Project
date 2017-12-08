@@ -52,7 +52,7 @@ int main() {
     generateInitialPCBs();
     struct timespec ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = 1;//QUANTUM_SCALAR;
+    ts.tv_nsec = 1; // 1 nanosecond to prevent crazy fast processing
     s_counter = S;
     totalCycles = 0;
 
@@ -522,7 +522,7 @@ void resetQueue() {
     }
     q_destructor(&temp);
     pq_string = p_q_to_string(readyqueue);
-    printf("%s",pq_string);
+    // printf("%s",pq_string);
     free(pq_string);
 }
 
