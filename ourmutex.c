@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #include "ourmutex.h"
 int mutex_lock(MUTEX_p mutex, PCB_p requesting_process){
     char * temp;

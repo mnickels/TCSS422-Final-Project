@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #ifndef FIFO_QUEUE_HEADER
 #define FIFO_QUEUE_HEADER
 

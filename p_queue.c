@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #include "p_queue.h"
 
 P_QUEUE_p p_q_constructor() {

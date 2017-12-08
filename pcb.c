@@ -1,10 +1,11 @@
 /*
-TCSS422
-Problem #1
-Group Members:
-Joshua Meigs
-Yaroslav Salo
-*/
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #include "pcb.h"
 #include "ourmutex.h"
 unsigned int GLOBAL_PID = 1;
@@ -89,13 +90,13 @@ PCB_p pcb_constructor(enum process_type ptype) {
 }
 
 int pcb_init(PCB_p pcb_ptr, enum process_type ptype) {
-    if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR; 
+    if (check_pointer(pcb_ptr) == NO_OBJ_ERR) return NO_OBJ_ERR;
     pcb_ptr->parent = GLOBAL_PID;                   // the parent is the process that came before
     pcb_set_pid(pcb_ptr);
     pcb_ptr->state = new;
-    pcb_ptr->priority = 0;                          // all new process get priority 0 
+    pcb_ptr->priority = 0;                          // all new process get priority 0
     pcb_ptr->mem = (unsigned char *) pcb_ptr;       // ?????????
-    pcb_ptr->size = 0;                              // ????????? 
+    pcb_ptr->size = 0;                              // ?????????
     pcb_ptr->channel_no = 0;                        // ?????????
     pcb_ptr->context = cpu_context_constructor();   // possibility that malloc returns NULL
     pcb_ptr->creation = clock();
@@ -212,7 +213,7 @@ char * pcb_to_string(PCB_p pcb_ptr) {
     //free the memory of the temporary context string.
     free(temp);
     return str;
-}  
+}
 
 char * pcb_simple_to_string(PCB_p pcb_ptr){
     if (check_pointer(pcb_ptr) == NO_OBJ_ERR) {
@@ -253,7 +254,7 @@ char * pcb_simple_to_string(PCB_p pcb_ptr){
                 default:
                     break;
             }
-            break;      
+            break;
     }
     sprintf(str, "PCB 0x%X  Type: %s", pcb_ptr->pid, ptype);
     return str;

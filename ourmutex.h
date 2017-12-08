@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #ifndef OUR_MUTEX_H
 #define OUR_MUTEX_H
 #include "queue.h"

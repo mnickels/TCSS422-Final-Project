@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #ifndef OS_H
 #define OS_H
 

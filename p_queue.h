@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #ifndef PRIO_QUEUE_HEADER
 #define PRIO_QUEUE_HEADER
 

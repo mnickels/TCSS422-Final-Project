@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #include "queue.h"
 
 QUEUE_p q_constructor(unsigned int quantum_size) {

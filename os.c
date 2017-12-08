@@ -1,3 +1,11 @@
+/*
+ * TCSS 422 Final Project
+ *
+ * Mike Nickels
+ * David Foster
+ * Yaroslav Salo
+ */
+
 #include "os.h"
 
 
@@ -42,14 +50,14 @@ int main() {
     PC_pcbs_created = 0;
     MR_pcbs_created = 0;
     generateInitialPCBs();
-    // struct timespec ts;
-    // ts.tv_sec = 0;
-    // ts.tv_nsec = 1000;//QUANTUM_SCALAR;
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 1000;//QUANTUM_SCALAR;
     s_counter = S;
     totalCycles = 0;
 
     for(;;) {
-        // nanosleep(&ts, NULL);
+        nanosleep(&ts, NULL);
         // printf("main loop @ PC=0x%04X\n", CPU_PC);
 
         if (!currentprocess->waiting_on_lock) {
@@ -65,7 +73,7 @@ int main() {
                 CPU_PC++;
             }
         }
-        
+
         pthread_mutex_lock(&interrupt_mutex);
         if (interrupt_flag != NO_INTERRUPT) scheduler();
         else if (trap_flag != NO_TRAP) scheduler();
@@ -107,7 +115,7 @@ void pseudo_ISR(interrupt_t interrupt) {
             //printf("pseudo-ISR called with no interrupt specified!!!\n");
             break;
         case TIMER_INTERRUPT:
-            //printf("Timer interrupt occurred\n");
+            // printf("Timer interrupt occurred\n");
             break;
         default:
             // printf("IO INTERRUPT occurred on IO device %d\n", interrupt);
@@ -164,7 +172,7 @@ void scheduler() {
 }
 
 void dispatcher() {
-    
+
     //check for deadlock every 10 context switch
     switch_count++;
     if(switch_count == 10) {
@@ -282,7 +290,7 @@ void runProcess() {
                             }
                         }
                     }
-                    
+
                     break;
                 case 2:
                     lock_result = mutex_unlock(currentprocess->mutexR1, currentprocess);
@@ -519,7 +527,7 @@ void resetQueue() {
 }
 
 void deadlock_monitor() {
-    int flag = 0; 
+    int flag = 0;
     PCB_p temp_a;
     PCB_p temp_b;
     for(int i = 0; i  < mut_res_idx; i++) {
@@ -527,7 +535,7 @@ void deadlock_monitor() {
         temp_a = temp->a;
         temp_b = temp->b;
         if( ((MUTEX_p)temp_a->mutexR1)->current_holder == temp_a && ((MUTEX_p)temp_b->mutexR2)->current_holder == temp_b) {
-            flag = 1;  
+            flag = 1;
         }
     }
     if (flag) printf("DEADLOCK Occurred with process 0x%X and process 0x%X\n", temp_a->pid, temp_b->pid);
