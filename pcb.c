@@ -260,16 +260,18 @@ char * pcb_simple_to_string(PCB_p pcb_ptr){
     return str;
 }
 
-void init_io_1(PCB_p my_pcb) {
+void init_io_1(PCB_p pcb) {
     for(int i = 0; i < 4; i++) {
-        my_pcb->io_1_traps[i] = rand() % 400 + (i * (rand() % 100 + 300));
+        // my_pcb->io_1_traps[i] = rand() % 400 + (i * (rand() % 100 + 300));
+        pcb->io_1_traps[i] = pcb->max_pc / 4 * i + (rand() % pcb->max_pc / 4);
         //printf("num: %u\n",  my_pcb->io_1_traps[i]);
     }
 }
 
-void init_io_2(PCB_p my_pcb) {
+void init_io_2(PCB_p pcb) {
     for(int i = 0; i < 4; i++) {
-        my_pcb->io_2_traps[i] = rand() % 250 + (i * (rand() % 100 + 250));
+        // my_pcb->io_2_traps[i] = rand() % 250 + (i * (rand() % 100 + 250));
+        pcb->io_2_traps[i] = pcb->max_pc / 4 * i + (rand() % pcb->max_pc / 4);
         //printf("num: %u\n",  my_pcb->io_2_traps[i]);
     }
 }

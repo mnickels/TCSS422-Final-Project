@@ -52,7 +52,7 @@ int main() {
     generateInitialPCBs();
     struct timespec ts;
     ts.tv_sec = 0;
-    ts.tv_nsec = 1000;//QUANTUM_SCALAR;
+    ts.tv_nsec = 1;//QUANTUM_SCALAR;
     s_counter = S;
     totalCycles = 0;
 
@@ -79,7 +79,7 @@ int main() {
         else if (trap_flag != NO_TRAP) scheduler();
         pthread_mutex_unlock(&interrupt_mutex);
 
-        if (totalCycles >= 250) break;
+        // if (totalCycles >= 250) break;
     }
     printf("250 cycles executed, stopping simulation.\n");
     printf("PCBs created by type:\n");
@@ -118,7 +118,7 @@ void pseudo_ISR(interrupt_t interrupt) {
             // printf("Timer interrupt occurred\n");
             break;
         default:
-            // printf("IO INTERRUPT occurred on IO device %d\n", interrupt);
+            printf("IO INTERRUPT occurred on IO device %d\n", interrupt);
             break;
     }
 }
@@ -538,6 +538,9 @@ void deadlock_monitor() {
             flag = 1;
         }
     }
-    if (flag) printf("DEADLOCK Occurred with process 0x%X and process 0x%X\n", temp_a->pid, temp_b->pid);
-    else      printf("NO DEADLOCK Occurred\n");
+    if (flag) {
+        printf("DEADLOCK Occurred with process 0x%X and process 0x%X\n", temp_a->pid, temp_b->pid);
+    } else {
+        printf("NO DEADLOCK Occurred\n");
+    }
 }

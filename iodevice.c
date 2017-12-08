@@ -59,10 +59,9 @@ PCB_p device_dequeue(DEVICE_p device_ptr) {
 void *device_run(void * device_ptr) {
 	DEVICE_p d = (DEVICE_p) device_ptr;
 	struct timespec ts;
-	ts.tv_sec = 0;	// 3 seconds for a single IO interrupt to occur
 	for(;;) {
 		if (d->ready && d->wait_queue->length) {
-			// ts.tv_sec = (rand() % 2) + 1;	// random value between 1 and 3 seconds, inclusive
+			ts.tv_sec = (rand() % 3) + 3;	// random value between 3 and 5 seconds, inclusive
 			ts.tv_nsec = QUANTUM_SCALAR + rand() % 1000;
 			nanosleep(&ts, NULL);
 			d->ready = 0; 
