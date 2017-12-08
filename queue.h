@@ -12,7 +12,7 @@
 #include "pcb.h"
 #include <stdlib.h>
 
-#define MAX_Q_STRING_LEN 256
+#define MAX_Q_STRING_LEN 4096
 
 typedef struct q_node_s {
 	PCB_p pcb;

@@ -79,7 +79,7 @@ int main() {
         else if (trap_flag != NO_TRAP) scheduler();
         pthread_mutex_unlock(&interrupt_mutex);
 
-        // if (totalCycles >= 250) break;
+         if (totalCycles >= 10000) break;
     }
     printf("250 cycles executed, stopping simulation.\n");
     printf("PCBs created by type:\n");
@@ -430,19 +430,31 @@ void addPCB() {
     int ptype = rand() % 4;
     switch (ptype) {
         case(0):
-            createPCB(IO);
+            if (MR_pcbs_created < MRU_PROCESS_LIMIT) {
+                createPCB(MR);
+                break;
+            }
+            //createPCB(IO);
             //scheduler();
-            break;
+            //break;
         case(1):
-            createPCB(CI);
+            if(PC_pcbs_created < PC_PAIR_PROCESS_LIMIT) {
+                createPCB(PrCo);
+                break;
+            }
+            //createPCB(CI);
             //scheduler();
-            break;
+            //break;
         case(2):
-            createPCB(PrCo);
+            if(IO_pcbs_created < IO_PROCESS_LIMIT) {
+                createPCB(IO);
+                break;
+            }
+            //createPCB(PrCo);
             //scheduler();
-            break;
+            //break;
         case(3):
-            createPCB(MR);
+            createPCB(CI);
             //scheduler();
             break;
         default:
@@ -496,7 +508,7 @@ void resetQueue() {
     // printf("S=%d iterations have passed - moving all processes to priority 0.\n", S);
     printf("RESET QUEUE after S=%d number of context switches\n", S);
     char * pq_string = p_q_to_string(readyqueue);
-    // printf("%s",pq_string);
+    //printf("%s",pq_string);
     free(pq_string);
     QUEUE_p temp = q_constructor(0);
     // move all pcbs out of the readyqueue
@@ -521,9 +533,9 @@ void resetQueue() {
         p_q_enqueue(readyqueue, temp_pcb);
     }
     q_destructor(&temp);
-    pq_string = p_q_to_string(readyqueue);
-    // printf("%s",pq_string);
-    free(pq_string);
+    char * pq_string2 = p_q_to_string(readyqueue);
+    //printf("%s",pq_string2);
+    free(pq_string2);
 }
 
 void deadlock_monitor() {
